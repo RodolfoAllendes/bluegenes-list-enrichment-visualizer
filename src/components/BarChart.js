@@ -28,7 +28,8 @@ const BarChart = ({ data }) => (
 				tickRotation: -45,
 				legend: 'GO Term',
 				legendPosition: 'middle',
-				legendOffset: 120
+				legendOffset: 120,
+				format: v => v.split('$')[1]
 			}}
 			axisLeft={{
 				tickSize: 5,
