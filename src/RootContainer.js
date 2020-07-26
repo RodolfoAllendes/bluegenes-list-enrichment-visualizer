@@ -10,6 +10,7 @@ const RootContainer = ({ serviceUrl, entity }) => {
 		widget: 'go_enrichment_for_gene'
 	};
 	const [data, setData] = useState([]);
+	const [graphData, setGraphData] = useState([]);
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
@@ -27,11 +28,27 @@ const RootContainer = ({ serviceUrl, entity }) => {
 				setLoading(false);
 			});
 	}, []);
+
+	useEffect(() => {
+		const graphData = [];
+		data.forEach((d, indx) => {
+			graphData.push({
+				GoTerm:
+					indx +
+					'$' +
+					d.description.slice(0, 17) +
+					(d.description.length > 17 ? '...' : ''),
+				value: d.matches,
+				tooltip: d
+			});
+		});
+		setGraphData(graphData);
+	}, [data]);
 	return (
 		<div className="rootContainer">
 			{loading ? (
 				<h1>Loading...</h1>
-			) : data.length ? (
+			) : graphData.length ? (
 				<div></div>
 			) : (
 				<h1>No Enrichment data found!</h1>
