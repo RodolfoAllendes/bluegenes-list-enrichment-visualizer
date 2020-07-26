@@ -76,17 +76,14 @@ const BarChart = ({ data }) => (
 							></span>
 							<span>
 								<strong>{identifier}: </strong>
-								{matches}
+								{matches} -{' '}
+								{((matches / populationAnnotationCount) * 100).toFixed(2)}%
 							</span>
 						</div>
 						<div>
 							<strong>Description: </strong>
 							{description}
 						</div>
-						{/* <div>
-							<strong>log10(p-value): </strong>
-							{-1 * Math.log10(node.data.tooltip.p-value)}
-						</div> */}
 						<div>
 							<strong>Population Annotation Count: </strong>
 							{populationAnnotationCount}

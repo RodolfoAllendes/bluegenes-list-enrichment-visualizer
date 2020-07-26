@@ -47,7 +47,9 @@ const RootContainer = ({ serviceUrl, entity }) => {
 	}, [data]);
 	return (
 		<div className="rootContainer">
-			<span className="chart-title">GO Term Enrichment Visualizer</span>
+			<span className="chart-title">
+				GO Term Vs Gene Count Enrichment Visualizer
+			</span>
 			{loading ? (
 				<h1>Loading...</h1>
 			) : graphData.length ? (
