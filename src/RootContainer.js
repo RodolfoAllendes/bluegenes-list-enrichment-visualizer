@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import queryData from './query';
+import BarChart from './components/BarChart';
 
 const RootContainer = ({ serviceUrl, entity }) => {
 	const filterOptions = {
@@ -46,10 +47,11 @@ const RootContainer = ({ serviceUrl, entity }) => {
 	}, [data]);
 	return (
 		<div className="rootContainer">
+			<span className="chart-title">GO Term Enrichment Visualizer</span>
 			{loading ? (
 				<h1>Loading...</h1>
 			) : graphData.length ? (
-				<div></div>
+				<BarChart data={graphData} />
 			) : (
 				<h1>No Enrichment data found!</h1>
 			)}
