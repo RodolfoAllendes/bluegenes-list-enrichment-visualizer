@@ -38,6 +38,61 @@ const BarChart = ({ data }) => (
 				legendPosition: 'middle',
 				legendOffset: -40
 			}}
+			tooltip={node => {
+				const {
+					identifier,
+					matches,
+					populationAnnotationCount,
+					description
+				} = node.data.tooltip;
+				return (
+					<div
+						style={{
+							background: 'white',
+							color: 'inherit',
+							fontSize: 'inherit',
+							borderRadius: 2,
+							boxShadow: 'rgba(0, 0, 0, 0.25) 0px 1px 2px',
+							padding: '5px 9px'
+						}}
+					>
+						<div
+							style={{
+								whiteSpace: 'pre',
+								display: 'flex',
+								alignItems: 'center'
+							}}
+						>
+							<span
+								style={{
+									display: 'block',
+									width: 12,
+									height: 12,
+									background: node.color,
+									marginRight: 7,
+									textAlign: 'left'
+								}}
+							></span>
+							<span>
+								<strong>{identifier}: </strong>
+								{matches}
+							</span>
+						</div>
+						<div>
+							<strong>Description: </strong>
+							{description}
+						</div>
+						{/* <div>
+							<strong>log10(p-value): </strong>
+							{-1 * Math.log10(node.data.tooltip.p-value)}
+						</div> */}
+						<div>
+							<strong>Population Annotation Count: </strong>
+							{populationAnnotationCount}
+						</div>
+					</div>
+				);
+			}}
 			animate={true}
 			motionStiffness={90}
 			motionDamping={15}
