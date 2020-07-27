@@ -1,28 +1,28 @@
 import React from 'react';
 
-const WidgetList = ({ list, selectedWidget }) => {
+const WidgetList = ({ list, selectedWidget, changeEnrichment }) => {
 	return (
 		<div className="widget-list-container">
 			<div className="filter-option">
 				{list.map(term => {
-					const { name } = term;
+					const { title } = term;
 					return (
 						<div
 							className={
-								selectedWidget.name == name
+								selectedWidget.title == title
 									? 'option selected'
 									: 'option not-selected'
 							}
-							key={name}
+							key={title}
 						>
 							<input
 								type="checkbox"
-								id={name}
-								value={name}
-								// onChange={expressionLevelFilter}
-								checked={selectedWidget.name == name}
+								id={term.title}
+								value={JSON.stringify(term)}
+								onChange={changeEnrichment}
+								checked={selectedWidget.title == title}
 							/>
-							<label htmlFor={name}>{name}</label>
+							<label htmlFor={title}>{title}</label>
 						</div>
 					);
 				})}

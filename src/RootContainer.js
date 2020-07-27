@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { queryData, getWidgets } from './query';
 import WidgetList from './components/WidgetList';
+import BarChart from './components/BarChart';
 
 const RootContainer = ({ serviceUrl, entity }) => {
 	const filterOptions = {
@@ -14,6 +15,7 @@ const RootContainer = ({ serviceUrl, entity }) => {
 	const [graphData, setGraphData] = useState([]);
 	const [selectedWidget, setSelectedWidget] = useState({});
 	const [loading, setLoading] = useState(false);
+	const [chartLoading, setChartLoading] = useState(false);
 
 	useEffect(() => {
 		setLoading(true);
@@ -28,22 +30,6 @@ const RootContainer = ({ serviceUrl, entity }) => {
 			}
 		});
 	}, []);
-
-	const getEnrichData = widget => {
-		queryData({
-			serviceUrl,
-			geneIds: entity.value,
-			filterOptions,
-			widget
-		})
-			.then(res => {
-				setLoading(false);
-				setData(res.slice(0, filterOptions.limitResults));
-			})
-			.catch(() => {
-				setLoading(false);
-			});
-	};
 
 	useEffect(() => {
 		const graphData = [];
@@ -60,13 +46,52 @@ const RootContainer = ({ serviceUrl, entity }) => {
 		});
 		setGraphData(graphData);
 	}, [data]);
+
+	const getEnrichData = widget => {
+		setChartLoading(true);
+		setGraphData([]);
+		queryData({
+			serviceUrl,
+			geneIds: entity.value,
+			filterOptions,
+			widget
+		})
+			.then(res => {
+				setData(res.slice(0, filterOptions.limitResults));
+				setChartLoading(false);
+			})
+			.catch(() => {
+				setChartLoading(false);
+			});
+	};
+
+	const changeEnrichment = widget => {
+		setSelectedWidget(widget);
+		getEnrichData(widget.name);
+	};
+
 	return (
 		<div className="rootContainer">
 			<span className="chart-title">Enrichment Visualisation</span>
 			{loading ? (
 				<h1>Loading...</h1>
 			) : widgetList.length ? (
-				<WidgetList list={widgetList} selectedWidget={selectedWidget} />
+				<div>
+					<WidgetList
+						list={widgetList}
+						selectedWidget={selectedWidget}
+						changeEnrichment={e => changeEnrichment(JSON.parse(e.target.value))}
+					/>
+					{!chartLoading ? (
+						graphData.length ? (
+							<BarChart data={graphData} />
+						) : (
+							<h2>No Enrichment Data Found!</h2>
+						)
+					) : (
+						<h1>Loading chart...</h1>
+					)}
+				</div>
 			) : (
 				<h1>No Enrichments found!</h1>
 			)}
