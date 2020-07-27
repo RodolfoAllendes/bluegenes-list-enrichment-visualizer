@@ -5,7 +5,7 @@ const BarChart = ({ data }) => (
 	<div
 		style={{
 			width: 'calc(100vw - 5rem)',
-			height: 700,
+			height: 630,
 			textAlign: 'center',
 			overflowX: 'scroll',
 			overflowY: 'hidden'
@@ -15,10 +15,10 @@ const BarChart = ({ data }) => (
 			data={data}
 			keys={['value']}
 			indexBy="GoTerm"
-			margin={{ top: 50, right: 60, bottom: 150, left: 80 }}
+			margin={{ top: 50, right: 60, bottom: 130, left: 80 }}
 			padding={0.3}
-			colors={{ scheme: 'nivo' }}
-			height={700}
+			colors={{ scheme: 'set2' }}
+			height={630}
 			width={data.length * 50 + 100}
 			axisTop={null}
 			axisRight={null}
@@ -28,7 +28,7 @@ const BarChart = ({ data }) => (
 				tickRotation: -45,
 				legend: 'GO Term',
 				legendPosition: 'middle',
-				legendOffset: 120,
+				legendOffset: 100,
 				format: v => v.split('$')[1]
 			}}
 			axisLeft={{
