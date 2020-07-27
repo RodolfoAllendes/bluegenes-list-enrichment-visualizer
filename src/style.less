@@ -20,5 +20,38 @@
       display: flex;
       justify-content: center;
     }
+    .widget-list-container {
+      .filter-option {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: center;
+        padding-top: 10px;
+        font-size: 16px;
+        font-family: arial;
+        text-align: center;
+
+        .option {
+            padding: 8px 15px;
+            margin: 5px 10px;
+            cursor: pointer;
+        }
+        .selected {
+            border: 1.2px solid rgb(85, 137, 233);
+            border-radius: 3px;
+            background: rgb(85, 137, 233);
+            color: white;
+        }
+        .not-selected {
+          border: 1.2px solid rgb(85, 137, 233);
+          border-radius: 3px;
+        }
+        input {
+            display: none;
+        }
+        label {
+            cursor: pointer;
+        }
+      }
+    }
 	}
 }
