@@ -1,7 +1,7 @@
 {
-  "accepts": ["ids"]  ,
+  "accepts": ["ids"],
   "classes":
-    ["Gene"]
+    ["Gene", "Protein"]
   ,
   "columnMapping": {
     "Gene": {
