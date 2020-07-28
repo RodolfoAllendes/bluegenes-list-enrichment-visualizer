@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const FilterPanel = () => {
+const FilterPanel = ({ data }) => {
+	const [filterOptions, setFilterOptions] = useState([]);
+	useEffect(() => {
+		if (data.filters) setFilterOptions(data.filters.split(','));
+	}, []);
 	return (
 		<div className="filter-panel">
 			<div className="title">Filter Panel</div>
@@ -8,9 +12,13 @@ const FilterPanel = () => {
 				<p>Test Correction:</p>
 				<div className="control">
 					<select name="correction">
-						<option value="Holm-Bonferroni">Holm-Bonferroni</option>
-						<option value="Benjamini Hochberg">Benjamini Hochberg</option>
-						<option value="Bonferroni">Bonferroni</option>
+						{['Holm-Bonferroni', 'Benjamini Hochberg', 'Bonferroni'].map(
+							item => (
+								<option value={item} key={item}>
+									{item}
+								</option>
+							)
+						)}
 					</select>
 				</div>
 			</div>
@@ -18,22 +26,28 @@ const FilterPanel = () => {
 				<p>Max p-value:</p>
 				<div className="control">
 					<select name="maxp">
-						<option value={0.05}>0.05</option>
-						<option value={0.1}>0.10</option>
-						<option value={1.0}>1.00</option>
+						{[0.05, 0.5, 1.0].map(val => (
+							<option value={val} key={val}>
+								{val}
+							</option>
+						))}
 					</select>
 				</div>
 			</div>
-			<div className="filter-container">
-				<p>Ontology:</p>
-				<div className="control">
-					<select name="processFilter">
-						<option value="biological_process">biological_process</option>
-						<option value="cellular_process">cellular_process</option>
-						<option value="molecular_function">molecular_function</option>
-					</select>
+			{data && data.filters && (
+				<div className="filter-container">
+					<p>Filter:</p>
+					<div className="control">
+						<select name="processFilter">
+							{filterOptions.map(val => (
+								<option value={val} key={val}>
+									{val}
+								</option>
+							))}
+						</select>
+					</div>
 				</div>
-			</div>
+			)}
 			<div className="filter-container">
 				<p>Results length:</p>
 				<div className="control">
@@ -41,6 +55,8 @@ const FilterPanel = () => {
 						type="number"
 						name="limitResults"
 						placeholder="Limit Results"
+						min="0"
+						max="100"
 					/>
 				</div>
 			</div>

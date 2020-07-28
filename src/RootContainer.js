@@ -87,7 +87,7 @@ const RootContainer = ({ serviceUrl, entity }) => {
 						graphData.length ? (
 							<div className="graph-container">
 								<BarChart data={graphData} />
-								<FilterPanel />
+								<FilterPanel data={selectedWidget} />
 							</div>
 						) : (
 							<h2>No Enrichment Data Found!</h2>
