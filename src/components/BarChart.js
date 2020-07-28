@@ -8,7 +8,8 @@ const BarChart = ({ data }) => (
 			height: 630,
 			textAlign: 'center',
 			overflowX: 'scroll',
-			overflowY: 'hidden'
+			overflowY: 'hidden',
+			margin: '0 30px'
 		}}
 	>
 		<Bar

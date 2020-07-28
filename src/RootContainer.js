@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { queryData, getWidgets } from './query';
 import WidgetList from './components/WidgetList';
 import BarChart from './components/BarChart';
+import FilterPanel from './components/FilterPanel';
 
 const RootContainer = ({ serviceUrl, entity }) => {
 	const filterOptions = {
@@ -84,7 +85,10 @@ const RootContainer = ({ serviceUrl, entity }) => {
 					/>
 					{!chartLoading ? (
 						graphData.length ? (
-							<BarChart data={graphData} />
+							<div className="graph-container">
+								<BarChart data={graphData} />
+								<FilterPanel />
+							</div>
 						) : (
 							<h2>No Enrichment Data Found!</h2>
 						)
