@@ -5,24 +5,24 @@ const WidgetList = ({ list, selectedWidget, changeEnrichment }) => {
 		<div className="widget-list-container">
 			<div className="filter-option">
 				{list.map(term => {
-					const { title } = term;
+					const { title, name } = term;
 					return (
 						<div
 							className={
-								selectedWidget.title == title
+								selectedWidget.name == name
 									? 'option selected'
 									: 'option not-selected'
 							}
-							key={title}
+							key={name}
 						>
 							<input
 								type="checkbox"
-								id={term.title}
+								id={name}
 								value={JSON.stringify(term)}
 								onChange={changeEnrichment}
-								checked={selectedWidget.title == title}
+								checked={selectedWidget.name == name}
 							/>
-							<label htmlFor={title}>{title}</label>
+							<label htmlFor={name}>{title}</label>
 						</div>
 					);
 				})}
