@@ -53,15 +53,16 @@ const BarChart = ({ data }) => (
 							color: 'inherit',
 							fontSize: 'inherit',
 							borderRadius: 2,
-							boxShadow: 'rgba(0, 0, 0, 0.25) 0px 1px 2px',
-							padding: '5px 9px'
+							padding: '5px 9px',
+							width: 200,
+							textAlign: 'left'
 						}}
 					>
 						<div
 							style={{
 								whiteSpace: 'pre',
 								display: 'flex',
-								alignItems: 'center'
+								alignItems: 'left'
 							}}
 						>
 							<span
