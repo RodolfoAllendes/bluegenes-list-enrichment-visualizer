@@ -17,19 +17,24 @@ const RootContainer = ({ serviceUrl, entity }) => {
 	const [selectedWidget, setSelectedWidget] = useState({});
 	const [loading, setLoading] = useState(false);
 	const [chartLoading, setChartLoading] = useState(false);
+	const [maxResultLimit, setMaxLimit] = useState(0);
 
 	useEffect(() => {
 		setLoading(true);
-		getWidgets({ serviceUrl }).then(res => {
-			const enrichmentWidgets = res.filter(w => w.widgetType === 'enrichment');
-			setLoading(false);
-			setWidgetList(enrichmentWidgets);
-			if (enrichmentWidgets.length) {
-				const firstWidget = enrichmentWidgets[0];
-				getEnrichData(firstWidget.name);
-				setSelectedWidget(firstWidget);
-			}
-		});
+		getWidgets({ serviceUrl })
+			.then(res => {
+				const enrichmentWidgets = res.filter(
+					w => w.widgetType === 'enrichment'
+				);
+				setLoading(false);
+				setWidgetList(enrichmentWidgets);
+				if (enrichmentWidgets.length) {
+					const firstWidget = enrichmentWidgets[0];
+					getEnrichData(firstWidget.name);
+					setSelectedWidget(firstWidget);
+				}
+			})
+			.catch(() => setLoading(false));
 	}, []);
 
 	useEffect(() => {
@@ -58,6 +63,7 @@ const RootContainer = ({ serviceUrl, entity }) => {
 			widget
 		})
 			.then(res => {
+				setMaxLimit(res.length);
 				setData(res.slice(0, filterOptions.limitResults));
 				setChartLoading(false);
 			})
@@ -101,6 +107,7 @@ const RootContainer = ({ serviceUrl, entity }) => {
 									applyFilters={() => getEnrichData(selectedWidget.name)}
 									updateFilter={updateFilter}
 									filters={filterOptions}
+									maxLimit={maxResultLimit}
 								/>
 							</div>
 						) : (

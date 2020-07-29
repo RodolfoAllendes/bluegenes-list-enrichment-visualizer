@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-const FilterPanel = ({ data, applyFilters, updateFilter, filters }) => {
+const FilterPanel = ({
+	data,
+	applyFilters,
+	updateFilter,
+	filters,
+	maxLimit
+}) => {
 	const [filterOptions, setFilterOptions] = useState([]);
 	useEffect(() => {
 		if (data.filters) setFilterOptions(data.filters.split(','));
@@ -57,14 +63,14 @@ const FilterPanel = ({ data, applyFilters, updateFilter, filters }) => {
 				</div>
 			)}
 			<div className="filter-container">
-				<p>Results length:</p>
+				<p>Results length (0 - {maxLimit}):</p>
 				<div className="control">
 					<input
 						type="number"
 						name="limitResults"
 						placeholder="Limit Results"
 						min="0"
-						max="100"
+						max={maxLimit}
 						value={filters['limitResults']}
 						onChange={updateFilter}
 					/>
