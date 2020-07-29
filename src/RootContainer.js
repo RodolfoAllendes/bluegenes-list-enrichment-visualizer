@@ -5,12 +5,12 @@ import BarChart from './components/BarChart';
 import FilterPanel from './components/FilterPanel';
 
 const RootContainer = ({ serviceUrl, entity }) => {
-	const filterOptions = {
+	const [filterOptions, setFilterOptions] = useState({
 		maxp: 0.05,
 		processFilter: 'biological_process',
 		correction: 'Holm-Bonferroni',
 		limitResults: 20
-	};
+	});
 	const [data, setData] = useState([]);
 	const [widgetList, setWidgetList] = useState([]);
 	const [graphData, setGraphData] = useState([]);
@@ -71,6 +71,15 @@ const RootContainer = ({ serviceUrl, entity }) => {
 		getEnrichData(widget.name);
 	};
 
+	const updateFilter = ev => {
+		const { name, value } = ev.target;
+		setFilterOptions({
+			...filterOptions,
+			[name]:
+				['maxp', 'limitResults'].indexOf(name) !== -1 ? Number(value) : value
+		});
+	};
+
 	return (
 		<div className="rootContainer">
 			<span className="chart-title">Enrichment Visualisation</span>
@@ -87,7 +96,12 @@ const RootContainer = ({ serviceUrl, entity }) => {
 						graphData.length ? (
 							<div className="graph-container">
 								<BarChart data={graphData} />
-								<FilterPanel data={selectedWidget} />
+								<FilterPanel
+									data={selectedWidget}
+									applyFilters={() => getEnrichData(selectedWidget.name)}
+									updateFilter={updateFilter}
+									filters={filterOptions}
+								/>
 							</div>
 						) : (
 							<h2>No Enrichment Data Found!</h2>
