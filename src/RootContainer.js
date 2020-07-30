@@ -24,7 +24,9 @@ const RootContainer = ({ serviceUrl, entity }) => {
 		getWidgets({ serviceUrl })
 			.then(res => {
 				const enrichmentWidgets = res.filter(
-					w => w.widgetType === 'enrichment'
+					w =>
+						w.widgetType === 'enrichment' &&
+						w.targets.indexOf(entity.class) !== -1
 				);
 				setLoading(false);
 				setWidgetList(enrichmentWidgets);
