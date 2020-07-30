@@ -55,7 +55,7 @@ const BarChart = ({ data }) => (
 							fontSize: 'inherit',
 							borderRadius: 2,
 							padding: '5px 9px',
-							width: 200,
+							width: 300,
 							textAlign: 'left'
 						}}
 					>
@@ -76,11 +76,16 @@ const BarChart = ({ data }) => (
 									textAlign: 'left'
 								}}
 							></span>
-							<span>
+							<div
+								style={{
+									display: 'flex',
+									flexFlow: 'wrap'
+								}}
+							>
 								<strong>{identifier}: </strong>
 								{matches} -{' '}
 								{((matches / populationAnnotationCount) * 100).toFixed(2)}%
-							</span>
+							</div>
 						</div>
 						<div>
 							<strong>Description: </strong>
