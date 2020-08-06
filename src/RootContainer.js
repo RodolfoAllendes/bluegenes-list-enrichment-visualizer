@@ -43,7 +43,7 @@ const RootContainer = ({ serviceUrl, entity }) => {
 		const graphData = [];
 		data.forEach((d, indx) => {
 			graphData.push({
-				GoTerm:
+				term:
 					indx +
 					'$' +
 					d.description.slice(0, 17) +
@@ -103,7 +103,11 @@ const RootContainer = ({ serviceUrl, entity }) => {
 					{!chartLoading ? (
 						graphData.length ? (
 							<div className="graph-container">
-								<BarChart data={graphData} />
+								<BarChart
+									data={graphData}
+									xaxis={selectedWidget.description}
+									yaxis={entity.class}
+								/>
 								<FilterPanel
 									data={selectedWidget}
 									applyFilters={() => getEnrichData(selectedWidget.name)}

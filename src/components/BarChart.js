@@ -1,7 +1,7 @@
 import React from 'react';
 import { Bar } from '@nivo/bar';
 
-const BarChart = ({ data }) => (
+const BarChart = ({ data, xaxis, yaxis }) => (
 	<div
 		style={{
 			width: 'calc(100vw - 5rem)',
@@ -15,7 +15,7 @@ const BarChart = ({ data }) => (
 		<Bar
 			data={data}
 			keys={['value']}
-			indexBy="GoTerm"
+			indexBy="term"
 			margin={{ top: 50, right: 60, bottom: 130, left: 80 }}
 			padding={0.3}
 			colors={{ scheme: 'set2' }}
@@ -27,7 +27,7 @@ const BarChart = ({ data }) => (
 				tickSize: 5,
 				tickPadding: 5,
 				tickRotation: -45,
-				legend: 'GO Term',
+				legend: xaxis.substring(0, xaxis.indexOf('enriched')),
 				legendPosition: 'middle',
 				legendOffset: 100,
 				format: v => v.split('$')[1]
@@ -36,7 +36,7 @@ const BarChart = ({ data }) => (
 				tickSize: 5,
 				tickPadding: 5,
 				tickRotation: 0,
-				legend: 'No of Genes',
+				legend: `No of ${yaxis}s`,
 				legendPosition: 'middle',
 				legendOffset: -40
 			}}
