@@ -3,6 +3,7 @@ import { queryData, getWidgets } from './query';
 import WidgetList from './components/WidgetList';
 import BarChart from './components/BarChart';
 import FilterPanel from './components/FilterPanel';
+import Loading from './components/Loading';
 
 const RootContainer = ({ serviceUrl, entity }) => {
 	const [filterOptions, setFilterOptions] = useState({
@@ -92,7 +93,7 @@ const RootContainer = ({ serviceUrl, entity }) => {
 		<div className="rootContainer">
 			<span className="chart-title">Enrichment Visualisation</span>
 			{loading ? (
-				<h1>Loading...</h1>
+				<Loading />
 			) : widgetList.length ? (
 				<div>
 					<WidgetList
@@ -120,7 +121,7 @@ const RootContainer = ({ serviceUrl, entity }) => {
 							<h2>No Enrichment Data Found!</h2>
 						)
 					) : (
-						<h1>Loading chart...</h1>
+						<div className="loading">Loading chart...</div>
 					)}
 				</div>
 			) : (
