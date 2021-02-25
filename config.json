@@ -1,0 +1,23 @@
+{
+  "accepts": ["ids"],
+  "classes":
+    ["Gene", "Protein"]
+  ,
+  "columnMapping": {
+    "Gene": {
+      "id": "primaryIdentifier"
+    },
+    "Protein": {
+      "id": "primaryAccession"
+    }
+  },
+  "files" : {
+    "css" : "dist/style.css",
+    "js" : "dist/bundle.js"
+  },
+  "toolName" : {
+    "human" :"Bluegenes List Enrichment Visualizer",
+    "cljs" :"blugenesListEnrichmentVisualizer"    
+  },
+  "version": 2
+}
