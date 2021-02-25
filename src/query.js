@@ -1,5 +1,3 @@
-import imjs from 'imjs';
-
 const getWidgets = ({ serviceUrl, imjsClient = imjs }) => {
 	const service = new imjsClient.Service({
 		root: serviceUrl
@@ -37,10 +35,10 @@ const queryData = ({
 				correction: filterOptions['correction']
 			})
 			.then(res => {
-				if (res.length === 0) reject('No data found!');
+				if (res.length === 0) reject('No enrichment data found!');
 				resolve(res);
 			})
-			.catch(() => reject('No data found!'));
+			.catch(() => reject('No enrichment data found!'));
 	});
 };
 

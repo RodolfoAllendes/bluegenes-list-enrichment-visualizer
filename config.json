@@ -1,8 +1,6 @@
 {
   "accepts": ["ids"],
-  "classes":
-    ["Gene", "Protein"]
-  ,
+  "classes": ["Gene"],
   "columnMapping": {
     "Gene": {
       "id": "primaryIdentifier"
@@ -16,7 +14,7 @@
     "js" : "dist/bundle.js"
   },
   "toolName" : {
-    "human" :"Bluegenes List Enrichment Visualizer",
+    "human" :"Enrichment Bar Chart",
     "cljs" :"blugenesListEnrichmentVisualizer"    
   },
   "version": 2

@@ -7,23 +7,23 @@ const WidgetList = ({ list, selectedWidget, changeEnrichment }) => {
 				{list.map(term => {
 					const { title, name } = term;
 					return (
-						<div
-							className={
-								selectedWidget.name == name
-									? 'option selected'
-									: 'option not-selected'
-							}
-							key={name}
-						>
-							<input
-								type="checkbox"
-								id={name}
-								value={JSON.stringify(term)}
-								onChange={changeEnrichment}
-								checked={selectedWidget.name == name}
-							/>
-							<label htmlFor={name}>{title}</label>
-						</div>
+						<label key={name}>
+							<div
+								className={
+									selectedWidget.name == name
+										? 'option selected'
+										: 'option not-selected'
+								}
+							>
+								<input
+									type="checkbox"
+									value={JSON.stringify(term)}
+									onChange={changeEnrichment}
+									checked={selectedWidget.name == name}
+								/>
+								{title}
+							</div>
+						</label>
 					);
 				})}
 			</div>

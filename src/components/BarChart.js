@@ -1,26 +1,15 @@
 import React from 'react';
-import { Bar } from '@nivo/bar';
+import { ResponsiveBar } from '@nivo/bar';
 
 const BarChart = ({ data, xaxis, yaxis }) => (
-	<div
-		style={{
-			width: 'calc(100vw - 5rem)',
-			height: 630,
-			textAlign: 'center',
-			overflowX: 'scroll',
-			overflowY: 'hidden',
-			margin: '0 30px'
-		}}
-	>
-		<Bar
+	<div className="graph">
+		<ResponsiveBar
 			data={data}
 			keys={['value']}
 			indexBy="term"
 			margin={{ top: 50, right: 60, bottom: 130, left: 80 }}
 			padding={0.3}
 			colors={{ scheme: 'set2' }}
-			height={630}
-			width={data.length * 50 + 100}
 			axisTop={null}
 			axisRight={null}
 			axisBottom={{
@@ -48,40 +37,15 @@ const BarChart = ({ data, xaxis, yaxis }) => (
 					description
 				} = node.data.tooltip;
 				return (
-					<div
-						style={{
-							background: 'white',
-							color: 'inherit',
-							fontSize: 'inherit',
-							borderRadius: 2,
-							padding: '5px 9px',
-							width: 300,
-							textAlign: 'left'
-						}}
-					>
-						<div
-							style={{
-								whiteSpace: 'pre',
-								display: 'flex',
-								alignItems: 'left'
-							}}
-						>
+					<div className="tooltip-container">
+						<div className="tooltip-data">
 							<span
+								className="node-color"
 								style={{
-									display: 'block',
-									width: 12,
-									height: 12,
-									background: node.color,
-									marginRight: 7,
-									textAlign: 'left'
+									background: node.color
 								}}
 							></span>
-							<div
-								style={{
-									display: 'flex',
-									flexFlow: 'wrap'
-								}}
-							>
+							<div className="tooltip-text">
 								<strong>{identifier}: </strong>
 								{matches} -{' '}
 								{((matches / populationAnnotationCount) * 100).toFixed(2)}%

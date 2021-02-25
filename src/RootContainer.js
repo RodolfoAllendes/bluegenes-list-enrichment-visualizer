@@ -16,12 +16,11 @@ const RootContainer = ({ serviceUrl, entity }) => {
 	const [widgetList, setWidgetList] = useState([]);
 	const [graphData, setGraphData] = useState([]);
 	const [selectedWidget, setSelectedWidget] = useState({});
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const [chartLoading, setChartLoading] = useState(false);
 	const [maxResultLimit, setMaxLimit] = useState(0);
 
 	useEffect(() => {
-		setLoading(true);
 		getWidgets({ serviceUrl })
 			.then(res => {
 				const enrichmentWidgets = res.filter(
@@ -91,7 +90,6 @@ const RootContainer = ({ serviceUrl, entity }) => {
 
 	return (
 		<div className="rootContainer">
-			<span className="chart-title">Enrichment Visualisation</span>
 			{loading ? (
 				<Loading />
 			) : widgetList.length ? (
@@ -101,31 +99,29 @@ const RootContainer = ({ serviceUrl, entity }) => {
 						selectedWidget={selectedWidget}
 						changeEnrichment={e => changeEnrichment(JSON.parse(e.target.value))}
 					/>
-					{!chartLoading ? (
-						graphData.length ? (
-							<div className="graph-container">
-								<BarChart
-									data={graphData}
-									xaxis={selectedWidget.description}
-									yaxis={entity.class}
-								/>
-								<FilterPanel
-									data={selectedWidget}
-									applyFilters={() => getEnrichData(selectedWidget.name)}
-									updateFilter={updateFilter}
-									filters={filterOptions}
-									maxLimit={maxResultLimit}
-								/>
-							</div>
-						) : (
-							<h2>No Enrichment Data Found!</h2>
-						)
+					{graphData.length ? (
+						<div className="graph-container">
+							<FilterPanel
+								data={selectedWidget}
+								applyFilters={() => getEnrichData(selectedWidget.name)}
+								updateFilter={updateFilter}
+								filters={filterOptions}
+								maxLimit={maxResultLimit}
+							/>
+							<BarChart
+								data={graphData}
+								xaxis={selectedWidget.description}
+								yaxis={entity.class}
+							/>
+						</div>
+					) : chartLoading ? (
+						<Loading />
 					) : (
-						<div className="loading">Loading chart...</div>
+						<h4 className="no-data">No enrichment data found</h4>
 					)}
 				</div>
 			) : (
-				<h1>No Enrichments found!</h1>
+				<h4 className="no-data">No enrichment widgets found</h4>
 			)}
 		</div>
 	);

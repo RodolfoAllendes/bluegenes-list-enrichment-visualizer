@@ -13,7 +13,6 @@ const FilterPanel = ({
 	}, []);
 	return (
 		<div className="filter-panel">
-			<div className="title">Filter Panel</div>
 			<div className="filter-container">
 				<p>Test Correction:</p>
 				<div className="control">
@@ -76,9 +75,11 @@ const FilterPanel = ({
 					/>
 				</div>
 			</div>
-			<button className="apply-filters-button" onClick={applyFilters}>
-				Apply
-			</button>
+			<div className="filter-container">
+				<button className="apply-filters-button" onClick={applyFilters}>
+					Apply
+				</button>
+			</div>
 		</div>
 	);
 };
