@@ -13,6 +13,7 @@
     "css" : "dist/style.css",
     "js" : "dist/bundle.js"
   },
+  "threshold": 500,
   "toolName" : {
     "human" :"Enrichment Bar Chart",
     "cljs" :"blugenesListEnrichmentVisualizer"    
