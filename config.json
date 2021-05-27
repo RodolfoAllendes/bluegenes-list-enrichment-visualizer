@@ -9,6 +9,7 @@
       "id": "primaryAccession"
     }
   },
+  "description" : "Enrichment statistics for a number of annotation types are shown in the enrichment bar in the right hand panel.  This bar chart displays data from these enrichment tables - specifically the number of genes for the highest enriched annotation categories (i.e those with the lowest p-value).  By default the top 19 enriched annotation terms are shown, although this can be changed using the “Results length” selector.  It is possible to toggle between Gene Ontology enrichment, publication enrichment, pathway enrichment and protein domain enrichment.  A multiple test correction, Holm-Bonferroni, is applied to the data by default. It is possible to choose different test corrections from the drop-down menu; Benjamini Hochberg (least stringent) and Bonferroni (most stringent).  Only annotations with a p-value less than 0.05 will be shown by default, but this can also be changed to 0.5 or 1 using the drop-down menu.",
   "files" : {
     "css" : "dist/style.css",
     "js" : "dist/bundle.js"
