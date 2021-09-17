@@ -6,27 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>
-    Bluegenes List Enrichment Visualizer
+    TM-Bluegenes Enrichment Visualizer
   </title>
 
   <!-- You can assume imjs is on the window.  -->
   <script src="node_modules/imjs/dist/im.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-
-  
-  <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+	<script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
   
-
-  <!-- These are styles that will be inherited from bluegenes -->
-  <link rel="stylesheet" href="css/site.css">
-
-
   <!-- These are the styles YOU implement in src/style.less -->
   <link rel="stylesheet" href="dist/style.css">
+	
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
 	<script>
-		var socket = io("http://localhost:3457");
+		var socket = io("http://10.100.60.138:3457");
     socket.on('reload', function(){
 			document.location.reload();
     });
@@ -37,27 +31,14 @@
   <div class="blugenesListEnrichmentVisualizer" id='yourDiv' />
   <script>
     window.onload = function() {
+			let servers = {
+				rodolfo: 'http://10.100.60.138:8080/targetmine',
+				brak: 'http://10.100.0.101:8080/targetmine',
+				kade: 'http://10.100.0.102:8080/targetmine'
+			};
+			var imService = { root: servers.brak };
 	    //The element to attach the viewer to. Must be an existing DOM element
     	var elem = document.getElementById('yourDiv'),
-    		//InterMine service, including URL and token.
-    		imURL = {
-    			root: 'https://www.flymine.org/flymine',
-    			//could include token here too if we had one
-    		},
-    		//this is an example of data that could be passed to this tool be BlueGenes
-    		//in reality (outside the demo) this would be dynamic and not hard-coded
-    		// to an ID.
-    		dataToInitialiseToolWith = {
-          'Gene': {
-            class: 'Gene',
-            format: 'ids',
-            // right now this id corresponds to Human GATA1
-            // this is a bit fragile since IDs change with every build
-            // but we don't want to make the code more complicated than
-            // needed for the demo.
-            value: ["1001838", "1004436", "1006143", "1006161", "1006363", "1007394", "1007699", "1007737", "1007930", "1009576", "1011454", "1012846", "1014918", "1015631", "1017353", "1018458", "1019554", "1020065", "1020178", "1020664", "1021115", "1021696", "1023166", "1023692", "1024045", "1024893", "1025044", "1025059", "1025318", "1026994", "1027587", "1027608", "1028142", "1028387", "1028913", "1028948", "1029210", "1029366", "1030656", "1030725", "1032478", "1032496", "1034116", "1035437", "1036103", "1037055", "1038091", "1038756", "1038849", "1041055", "1043148", "1043626", "1046316", "1051637", "1051737", "1054139", "1054159", "1054645", "1073730", "1077030", "1082393", "1086418", "1097367", "1097577", "1106143", "1109670", "1126552", "1127141", "1127207", "1131077", "1148594", "1164323", "1165186", "1187006", "1198701", "1199105", "1224178", "1288710", "1451034"]
-          }
-    		},
     		toolState = {}, //to be confirmed how we use this.
         navigate = function(type, data, mine) {
           // Helpful console message when calling navigate function.
@@ -70,9 +51,26 @@
     	// THIS LINE IS THE IMPORTANT BIT. YOU SHOULDN'T NEED TO EDIT IT
     	// the method signature should match the signature in src/index.js
     	$.ajax('config.json').then(function(config) {
+				var dataToInitialiseToolWith = {
+          Gene: {
+            class: 'Gene',
+            format: 'ids',
+            value: [7218825,7707789,7626797,7441898,7892239,7314861,7820704,7912214,7227608,7227690,7227945,7228367,
+										7126682,7626866,7133414,7331878,7080047,7694139,7442858,7054186,7433135,7536688,7433761,7528565,
+										7319194,7352375,7090998,7737707,7737790,7738592,7051549,7552323,17716281,7641497,
+										7442421,7612540,7707665,7707731,7215516,7152701,7215664,7115241,7693706,7453939,
+										7451391,7357194,7554650,7751433,7652277,7196289,7258766,7066707,7850547,7608689,7509152,
+										7560425,7460900,7460963,7853494,7954159,7568658,7707834,7155518,7864712,7506916,7927945,
+										7686273,7487718,7507015,7275727,7765958,7677101,7983069,7179934,7920904,7067790,7599494,
+										7889207,7235298,7252927,7974806,7187202,7387639,7079992,7564956,7318308,7629562,7837100,
+										7394182,7394124,7787533,7785636,7785695,7494800,7396176,7219525,7103697,7709171,7399179,
+										7696217,7600411,7036254,7797339,7618103,7717086,7598828,7891878,7059050,7625114,7204185,
+										7850700,7352213,7707614,7052855,7282478,]
+          }
+    		};
     		blugenesListEnrichmentVisualizer.main(
     			elem,
-          imURL,
+          imService,
           dataToInitialiseToolWith,
           toolState,
           config,
