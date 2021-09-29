@@ -3,6 +3,7 @@ import React from 'react';
 const WidgetList = ({ list, selectedWidget, changeEnrichment }) => {
 	return (
 		<div className="widget-list-container">
+			<h5 className="report-item-heading">Available Widgets</h5>
 			<div className="filter-option">
 				{list.map(term => {
 					const { title, name } = term;

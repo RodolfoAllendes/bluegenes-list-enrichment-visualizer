@@ -1,12 +1,8 @@
-const getWidgets = ({ serviceUrl, imjsClient = imjs }) => {
-	const service = new imjsClient.Service({
-		root: serviceUrl
-	});
+const getWidgets = ({ service }) => {
+	const tmService = new imjs.Service(service);
 	return new Promise((resolve, reject) => {
-		service
-			.fetchWidgets({
-				format: 'json'
-			})
+		tmService
+			.fetchWidgets()
 			.then(res => {
 				if (res.length === 0) reject('No widgets data found!');
 				resolve(res);
@@ -15,18 +11,10 @@ const getWidgets = ({ serviceUrl, imjsClient = imjs }) => {
 	});
 };
 
-const queryData = ({
-	geneIds,
-	serviceUrl,
-	filterOptions,
-	widget,
-	imjsClient = imjs
-}) => {
-	const service = new imjsClient.Service({
-		root: serviceUrl
-	});
+const queryData = ({ geneIds, service, filterOptions, widget }) => {
+	const tmService = new imjs.Service(service);
 	return new Promise((resolve, reject) => {
-		service
+		tmService
 			.enrichment({
 				ids: geneIds,
 				widget: widget,

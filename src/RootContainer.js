@@ -1,128 +1,100 @@
 import React, { useEffect, useState } from 'react';
-import { queryData, getWidgets } from './query';
+import { getWidgets, queryData } from './query';
+import PathwayTable from './components/PathwayTable';
+// import BarChart from './components/BarChart';
 import WidgetList from './components/WidgetList';
-import BarChart from './components/BarChart';
 import FilterPanel from './components/FilterPanel';
-import Loading from './components/Loading';
 
-const RootContainer = ({ serviceUrl, entity }) => {
-	const [filterOptions, setFilterOptions] = useState({
+const RootContainer = ({ service, entity }) => {
+	// state variable to handle loading of data
+	const [loading, setLoading] = useState(true);
+	// state variable for tracking of filtering options
+	// const [filterOptions, setFilterOptions] = useState({
+	// 	maxp: 0.05,
+	// 	processFilter: 'biological_process',
+	// 	correction: 'Holm-Bonferroni'
+	// });
+	const filterOptions = {
 		maxp: 0.05,
 		processFilter: 'biological_process',
-		correction: 'Holm-Bonferroni',
-		limitResults: 20
-	});
-	const [data, setData] = useState([]);
+		correction: 'Holm-Bonferroni'
+	};
+	// the list of enrichment widgets available and the one currently selected
 	const [widgetList, setWidgetList] = useState([]);
-	const [graphData, setGraphData] = useState([]);
 	const [selectedWidget, setSelectedWidget] = useState({});
-	const [loading, setLoading] = useState(true);
-	const [chartLoading, setChartLoading] = useState(false);
-	const [maxResultLimit, setMaxLimit] = useState(0);
+	// pathway results (data) retrieved from the current widget
+	const [pathways, setPathways] = useState([]);
+	// const [graphData, setGraphData] = useState([]);
 
+	// executed on load
+	// retrieve the list of enrichment widgets and initialize corresponding states
 	useEffect(() => {
-		getWidgets({ serviceUrl })
+		getWidgets({ service })
 			.then(res => {
-				const enrichmentWidgets = res.filter(
+				// filter out widgets that are not suitable for the type of list we are
+				// handling
+				const widgets = res.filter(
 					w =>
 						w.widgetType === 'enrichment' &&
-						w.targets.indexOf(entity.class) !== -1
+						w.targets.indexOf(entity.Gene.class) !== -1
 				);
-				setLoading(false);
-				setWidgetList(enrichmentWidgets);
-				if (enrichmentWidgets.length) {
-					const firstWidget = enrichmentWidgets[0];
-					getEnrichData(firstWidget.name);
+				setWidgetList(widgets);
+				// set the first widget of the list as selected, and fetch its data
+				if (widgets.length) {
+					const firstWidget = widgets[0];
+					getEnrichedPathways(firstWidget.name);
 					setSelectedWidget(firstWidget);
 				}
+				setLoading(false);
 			})
-			.catch(() => setLoading(false));
+			.catch(() => {
+				setLoading(false);
+			});
 	}, []);
 
-	useEffect(() => {
-		const graphData = [];
-		data.forEach((d, indx) => {
-			graphData.push({
-				term:
-					indx +
-					'$' +
-					d.description.slice(0, 17) +
-					(d.description.length > 17 ? '...' : ''),
-				value: d.matches,
-				tooltip: d
-			});
-		});
-		setGraphData(graphData);
-	}, [data]);
+	// executed everytime pathways changes
+	useEffect(() => {}, [pathways]);
 
-	const getEnrichData = widget => {
-		setChartLoading(true);
-		setGraphData([]);
+	// function to retrieve the eriched pathways for the currently selected widget
+	// with the currently selected filters
+	const getEnrichedPathways = widget => {
+		setLoading(true);
 		queryData({
-			serviceUrl,
-			geneIds: entity.value,
+			geneIds: entity.Gene.value,
+			service,
 			filterOptions,
 			widget
 		})
 			.then(res => {
-				setMaxLimit(res.length);
-				setData(res.slice(0, filterOptions.limitResults));
-				setChartLoading(false);
+				setLoading(false);
+				setPathways(res);
 			})
 			.catch(() => {
-				setChartLoading(false);
+				setLoading(false);
 			});
-	};
-
-	const changeEnrichment = widget => {
-		setSelectedWidget(widget);
-		getEnrichData(widget.name);
-	};
-
-	const updateFilter = ev => {
-		const { name, value } = ev.target;
-		setFilterOptions({
-			...filterOptions,
-			[name]:
-				['maxp', 'limitResults'].indexOf(name) !== -1 ? Number(value) : value
-		});
 	};
 
 	return (
 		<div className="rootContainer">
-			{loading ? (
-				<Loading />
-			) : widgetList.length ? (
-				<div>
-					<WidgetList
-						list={widgetList}
-						selectedWidget={selectedWidget}
-						changeEnrichment={e => changeEnrichment(JSON.parse(e.target.value))}
-					/>
-					{graphData.length ? (
-						<div className="graph-container">
-							<FilterPanel
-								data={selectedWidget}
-								applyFilters={() => getEnrichData(selectedWidget.name)}
-								updateFilter={updateFilter}
-								filters={filterOptions}
-								maxLimit={maxResultLimit}
-							/>
-							<BarChart
-								data={graphData}
-								xaxis={selectedWidget.description}
-								yaxis={entity.class}
-							/>
-						</div>
-					) : chartLoading ? (
-						<Loading />
-					) : (
-						<h4 className="no-data">No enrichment data found</h4>
-					)}
-				</div>
-			) : (
-				<h4 className="no-data">No enrichment widgets found</h4>
-			)}
+			<div className="listEnrichmentVisualizerGraph">
+				<PathwayTable pathways={pathways} />
+			</div>
+			<div className="rightColumn">
+				{loading ? (
+					<h4 className="no-data">Loading...</h4>
+				) : widgetList.length ? (
+					<>
+						<WidgetList
+							list={widgetList}
+							selectedWidget={selectedWidget}
+							// changeEnrichment={e => changeEnrichment(JSON.parse(e.target.value))}
+						/>
+						<FilterPanel data={selectedWidget} filters={filterOptions} />
+					</>
+				) : (
+					<h4 className="no-data">No enrichment widgets found</h4>
+				)}
+			</div>
 		</div>
 	);
 };

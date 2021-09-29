@@ -9,11 +9,7 @@ function main(el, service, imEntity, state, config) {
 		throw new Error('Call main with correct signature');
 	}
 	ReactDOM.render(
-		<RootContainer
-			serviceUrl={service.root}
-			entity={imEntity.Gene}
-			config={config}
-		/>,
+		<RootContainer service={service} entity={imEntity} config={config} />,
 		el
 	);
 }
