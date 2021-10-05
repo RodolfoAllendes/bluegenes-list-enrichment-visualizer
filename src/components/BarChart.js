@@ -1,72 +1,99 @@
 import React from 'react';
 import { ResponsiveBar } from '@nivo/bar';
 
-const BarChart = ({ data, xaxis, yaxis }) => (
-	<div className="graph">
+const BarChart = ({ graphData }) => {
+	return (
 		<ResponsiveBar
-			data={data}
-			keys={['value']}
-			indexBy="term"
-			margin={{ top: 50, right: 60, bottom: 130, left: 80 }}
+			data={graphData}
+			indexBy="id"
+			margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
 			padding={0.3}
-			colors={{ scheme: 'set2' }}
+			valueScale={{ type: 'linear' }}
+			indexScale={{ type: 'band', round: true }}
+			valueFormat={{ format: '', enabled: false }}
+			colors={{ scheme: 'nivo' }}
+			defs={[
+				{
+					id: 'dots',
+					type: 'patternDots',
+					background: 'inherit',
+					color: '#38bcb2',
+					size: 4,
+					padding: 1,
+					stagger: true
+				},
+				{
+					id: 'lines',
+					type: 'patternLines',
+					background: 'inherit',
+					color: '#eed312',
+					rotation: -45,
+					lineWidth: 6,
+					spacing: 10
+				}
+			]}
+			fill={[
+				{
+					match: {
+						id: 'fries'
+					},
+					id: 'dots'
+				},
+				{
+					match: {
+						id: 'sandwich'
+					},
+					id: 'lines'
+				}
+			]}
+			borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
 			axisTop={null}
 			axisRight={null}
 			axisBottom={{
 				tickSize: 5,
 				tickPadding: 5,
-				tickRotation: -45,
-				legend: xaxis.substring(0, xaxis.indexOf('enriched')),
+				tickRotation: 0,
+				legend: 'country',
 				legendPosition: 'middle',
-				legendOffset: 100,
-				format: v => v.split('$')[1]
+				legendOffset: 32
 			}}
 			axisLeft={{
 				tickSize: 5,
 				tickPadding: 5,
 				tickRotation: 0,
-				legend: `No of ${yaxis}s`,
+				legend: 'food',
 				legendPosition: 'middle',
 				legendOffset: -40
 			}}
-			tooltip={node => {
-				const {
-					identifier,
-					matches,
-					populationAnnotationCount,
-					description
-				} = node.data.tooltip;
-				return (
-					<div className="tooltip-container">
-						<div className="tooltip-data">
-							<span
-								className="node-color"
-								style={{
-									background: node.color
-								}}
-							></span>
-							<div className="tooltip-text">
-								<strong>{identifier}: </strong>
-								{matches} -{' '}
-								{((matches / populationAnnotationCount) * 100).toFixed(2)}%
-							</div>
-						</div>
-						<div>
-							<strong>Description: </strong>
-							{description}
-						</div>
-						<div>
-							<strong>Population Annotation Count: </strong>
-							{populationAnnotationCount}
-						</div>
-					</div>
-				);
-			}}
-			animate={true}
-			motionStiffness={90}
-			motionDamping={15}
+			labelSkipWidth={12}
+			labelSkipHeight={12}
+			labelTextColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
+			legends={[
+				{
+					dataFrom: 'keys',
+					anchor: 'bottom-right',
+					direction: 'column',
+					justify: false,
+					translateX: 120,
+					translateY: 0,
+					itemsSpacing: 2,
+					itemWidth: 100,
+					itemHeight: 20,
+					itemDirection: 'left-to-right',
+					itemOpacity: 0.85,
+					symbolSize: 20,
+					effects: [
+						{
+							on: 'hover',
+							style: {
+								itemOpacity: 1
+							}
+						}
+					]
+				}
+			]}
 		/>
-	</div>
-);
+	);
+};
 
 export default BarChart;

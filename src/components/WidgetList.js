@@ -1,26 +1,30 @@
 import React from 'react';
 
-const WidgetList = ({ list, selectedWidget, changeEnrichment }) => {
+// Definition of the EnrichmentPanel Component
+const WidgetList = ({ widgets, selectedWidget, setSelectedWidget }) => {
 	return (
 		<div className="widget-list-container">
 			<h5 className="report-item-heading">Available Widgets</h5>
 			<div className="filter-option">
-				{list.map(term => {
-					const { title, name } = term;
+				{widgets.map(w => {
+					const { title, name } = w;
 					return (
 						<label key={name}>
 							<div
 								className={
-									selectedWidget.name == name
+									selectedWidget.name === name
 										? 'option selected'
 										: 'option not-selected'
 								}
 							>
 								<input
 									type="checkbox"
-									value={JSON.stringify(term)}
-									onChange={changeEnrichment}
-									checked={selectedWidget.name == name}
+									value={JSON.stringify(w)}
+									onChange={ev => {
+										const { value } = ev.target;
+										setSelectedWidget(JSON.parse(value));
+									}}
+									checked={selectedWidget.name === name}
 								/>
 								{title}
 							</div>

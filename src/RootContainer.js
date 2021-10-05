@@ -1,30 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { getWidgets, queryData } from './query';
 import PathwayTable from './components/PathwayTable';
-// import BarChart from './components/BarChart';
+import BarChart from './components/BarChart';
 import WidgetList from './components/WidgetList';
-import FilterPanel from './components/FilterPanel';
+// import FilterPanel from './components/FilterPanel';
 
 const RootContainer = ({ service, entity }) => {
 	// state variable to handle loading of data
 	const [loading, setLoading] = useState(true);
+	// state variable for the list of available enrichment widgets
+	const [widgetList, setWidgetList] = useState([]);
+	// // state variable for currently selected widget
+	const [selectedWidget, setSelectedWidget] = useState({});
 	// state variable for tracking of filtering options
-	// const [filterOptions, setFilterOptions] = useState({
-	// 	maxp: 0.05,
-	// 	processFilter: 'biological_process',
-	// 	correction: 'Holm-Bonferroni'
-	// });
 	const filterOptions = {
+		// const [filterOptions, setFilterOptions] = useState({
 		maxp: 0.05,
 		processFilter: 'biological_process',
 		correction: 'Holm-Bonferroni'
 	};
-	// the list of enrichment widgets available and the one currently selected
-	const [widgetList, setWidgetList] = useState([]);
-	const [selectedWidget, setSelectedWidget] = useState({});
 	// pathway results (data) retrieved from the current widget
 	const [pathways, setPathways] = useState([]);
-	// const [graphData, setGraphData] = useState([]);
+	const [graphData, setGraphData] = useState([]);
 
 	// executed on load
 	// retrieve the list of enrichment widgets and initialize corresponding states
@@ -42,8 +39,8 @@ const RootContainer = ({ service, entity }) => {
 				// set the first widget of the list as selected, and fetch its data
 				if (widgets.length) {
 					const firstWidget = widgets[0];
-					getEnrichedPathways(firstWidget.name);
 					setSelectedWidget(firstWidget);
+					getEnrichedPathways(firstWidget.name);
 				}
 				setLoading(false);
 			})
@@ -53,12 +50,37 @@ const RootContainer = ({ service, entity }) => {
 	}, []);
 
 	// executed everytime pathways changes
-	useEffect(() => {}, [pathways]);
+	useEffect(() => {
+		let gData = [];
+		pathways.forEach((d, i) => {
+			console.log(i, d);
+			// each bar in the bar graph needs a value
+			let bar = {
+				id: d.identifier,
+				value: d.matches,
+				tooltip: d.description
+			};
+			gData.push(bar);
+		});
+		console.log(gData);
+		setGraphData(gData);
+	}, [pathways]);
 
-	// function to retrieve the eriched pathways for the currently selected widget
+	// executed everytime filterOptions changes
+	// useEffect(() => {
+	// 	getEnrichedPathways(selectedWidget.name);
+	// }, [filterOptions]);
+
+	// executed everytime selectedWidget changes
+	useEffect(() => {
+		getEnrichedPathways(selectedWidget.name);
+	}, [selectedWidget]);
+
+	// function to retrieve the enriched pathways for the currently selected widget
 	// with the currently selected filters
 	const getEnrichedPathways = widget => {
 		setLoading(true);
+		setGraphData([]); // empty data for the graph, reloaded after setting pathways
 		queryData({
 			geneIds: entity.Gene.value,
 			service,
@@ -71,6 +93,7 @@ const RootContainer = ({ service, entity }) => {
 			})
 			.catch(() => {
 				setLoading(false);
+				setPathways([]);
 			});
 	};
 
@@ -78,6 +101,7 @@ const RootContainer = ({ service, entity }) => {
 		<div className="rootContainer">
 			<div className="listEnrichmentVisualizerGraph">
 				<PathwayTable pathways={pathways} />
+				<BarChart graphData={graphData} />
 			</div>
 			<div className="rightColumn">
 				{loading ? (
@@ -85,11 +109,15 @@ const RootContainer = ({ service, entity }) => {
 				) : widgetList.length ? (
 					<>
 						<WidgetList
-							list={widgetList}
+							widgets={widgetList}
 							selectedWidget={selectedWidget}
-							// changeEnrichment={e => changeEnrichment(JSON.parse(e.target.value))}
+							setSelectedWidget={setSelectedWidget}
 						/>
-						<FilterPanel data={selectedWidget} filters={filterOptions} />
+						{/* <FilterPanel 
+							filterOptions={filterOptions}
+							setFilterOptions={setFilterOptions}
+						/> */}
+						<h5 className="report-item-heading">Choose Visualization</h5>
 					</>
 				) : (
 					<h4 className="no-data">No enrichment widgets found</h4>

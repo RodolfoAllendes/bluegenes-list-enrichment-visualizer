@@ -2,12 +2,12 @@ import React from 'react';
 // import { useEffect, useState } from 'react';
 
 // Definition of the FilterPanel Component
-// data
-const FilterPanel = () => {
+const FilterPanel = ({ filterOptions, setFilterOptions }) => {
 	const correctionValues = [
 		'Holm-Bonferroni',
 		'Benjamini Hochberg',
-		'Bonferroni'
+		'Bonferroni',
+		'None'
 	];
 
 	return (
@@ -16,7 +16,20 @@ const FilterPanel = () => {
 				<h5 className="report-item-heading">Widget Filters</h5>
 				<p>Test Correction:</p>
 				<div className="control">
-					<select name="correction">
+					<select
+						name="correction"
+						value={filterOptions['correction']}
+						onChange={ev => {
+							const { name, value } = ev.target;
+							let newOpts = filterOptions;
+							newOpts['name'] = name === 'maxp' ? Number(value) : value;
+							setFilterOptions(newOpts);
+							// {
+							// 	...filterOptions,
+							// 	[name]:
+							// });
+						}}
+					>
 						{correctionValues.map(c => (
 							<option value={c} key={c}>
 								{c}
