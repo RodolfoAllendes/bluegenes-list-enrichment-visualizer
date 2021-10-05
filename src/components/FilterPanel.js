@@ -1,7 +1,5 @@
 import React from 'react';
-// import { useEffect, useState } from 'react';
 
-// Definition of the FilterPanel Component
 const FilterPanel = ({ filterOptions, setFilterOptions }) => {
 	const correctionValues = [
 		'Holm-Bonferroni',
@@ -11,35 +9,42 @@ const FilterPanel = ({ filterOptions, setFilterOptions }) => {
 	];
 
 	return (
-		<div className="filter-panel">
-			<div className="filter-container">
-				<h5 className="report-item-heading">Widget Filters</h5>
-				<p>Test Correction:</p>
-				<div className="control">
-					<select
-						name="correction"
-						value={filterOptions['correction']}
-						onChange={ev => {
-							const { name, value } = ev.target;
-							let newOpts = filterOptions;
-							newOpts['name'] = name === 'maxp' ? Number(value) : value;
-							setFilterOptions(newOpts);
-							// {
-							// 	...filterOptions,
-							// 	[name]:
-							// });
-						}}
-					>
-						{correctionValues.map(c => (
-							<option value={c} key={c}>
-								{c}
-							</option>
-						))}
-					</select>
+		<div className="im-table relative">
+			<div className="dashboard">
+				<div className="pagination-bar">
+					<label className="pagination-label">Enrichment Options:</label>
+					<div className="btn-toolbar pagination-buttons">
+						<div className="btn-group">
+							<label>Test Correction:</label>
+							<select
+								name="correction"
+								value={filterOptions['correction']}
+								onChange={ev => {
+									const { name, value } = ev.target;
+									let newOpts = filterOptions;
+									newOpts['name'] = name === 'maxp' ? Number(value) : value;
+									setFilterOptions(newOpts);
+									// {
+									// 	...filterOptions,
+									// 	[name]:
+									// });
+								}}
+							>
+								{correctionValues.map(c => (
+									<option value={c} key={c}>
+										{c}
+									</option>
+								))}
+							</select>
+						</div>
+						<div className="btn-group">
+							<label>Max p-value:</label>
+						</div>
+						<div className="btn-group">
+							<label>Filter</label>
+						</div>
+					</div>
 				</div>
-				<p>Max p-value:</p>
-				<p>Filter</p>
-				<button className="apply-filters-button">Apply</button>
 			</div>
 		</div>
 	);

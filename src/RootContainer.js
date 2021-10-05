@@ -3,24 +3,25 @@ import { getWidgets, queryData } from './query';
 import PathwayTable from './components/PathwayTable';
 import BarChart from './components/BarChart';
 import WidgetList from './components/WidgetList';
-// import FilterPanel from './components/FilterPanel';
+import FilterPanel from './components/FilterPanel';
+import DisplayTable from './components/DisplayTable';
 
 const RootContainer = ({ service, entity }) => {
 	// state variable to handle loading of data
-	const [loading, setLoading] = useState(true);
+	// const [loading, setLoading] = useState(true);
 	// state variable for the list of available enrichment widgets
 	const [widgetList, setWidgetList] = useState([]);
 	// // state variable for currently selected widget
 	const [selectedWidget, setSelectedWidget] = useState({});
 	// state variable for tracking of filtering options
-	const filterOptions = {
-		// const [filterOptions, setFilterOptions] = useState({
+	const [filterOptions, setFilterOptions] = useState({
 		maxp: 0.05,
 		processFilter: 'biological_process',
 		correction: 'Holm-Bonferroni'
-	};
+	});
 	// pathway results (data) retrieved from the current widget
 	const [pathways, setPathways] = useState([]);
+	const [graphType, setGraphType] = useState('bar');
 	const [graphData, setGraphData] = useState([]);
 
 	// executed on load
@@ -42,10 +43,10 @@ const RootContainer = ({ service, entity }) => {
 					setSelectedWidget(firstWidget);
 					getEnrichedPathways(firstWidget.name);
 				}
-				setLoading(false);
+				// setLoading(false);
 			})
 			.catch(() => {
-				setLoading(false);
+				// setLoading(false);
 			});
 	}, []);
 
@@ -79,7 +80,7 @@ const RootContainer = ({ service, entity }) => {
 	// function to retrieve the enriched pathways for the currently selected widget
 	// with the currently selected filters
 	const getEnrichedPathways = widget => {
-		setLoading(true);
+		// setLoading(true);
 		setGraphData([]); // empty data for the graph, reloaded after setting pathways
 		queryData({
 			geneIds: entity.Gene.value,
@@ -88,40 +89,32 @@ const RootContainer = ({ service, entity }) => {
 			widget
 		})
 			.then(res => {
-				setLoading(false);
+				// setLoading(false);
 				setPathways(res);
 			})
 			.catch(() => {
-				setLoading(false);
+				// setLoading(false);
 				setPathways([]);
 			});
 	};
 
 	return (
 		<div className="rootContainer">
-			<div className="listEnrichmentVisualizerGraph">
+			<div className="report-item-tool">
+				<WidgetList
+					widgets={widgetList}
+					selectedWidget={selectedWidget}
+					setSelectedWidget={setSelectedWidget}
+				/>
+				<FilterPanel
+					filterOptions={filterOptions}
+					setFilterOptions={setFilterOptions}
+				/>
 				<PathwayTable pathways={pathways} />
-				<BarChart graphData={graphData} />
+				<DisplayTable graphType={graphType} setGraphType={setGraphType} />
 			</div>
-			<div className="rightColumn">
-				{loading ? (
-					<h4 className="no-data">Loading...</h4>
-				) : widgetList.length ? (
-					<>
-						<WidgetList
-							widgets={widgetList}
-							selectedWidget={selectedWidget}
-							setSelectedWidget={setSelectedWidget}
-						/>
-						{/* <FilterPanel 
-							filterOptions={filterOptions}
-							setFilterOptions={setFilterOptions}
-						/> */}
-						<h5 className="report-item-heading">Choose Visualization</h5>
-					</>
-				) : (
-					<h4 className="no-data">No enrichment widgets found</h4>
-				)}
+			<div className="listEnrichmentVisualizerGraph">
+				<BarChart graphData={graphData} graphType={graphType} />
 			</div>
 		</div>
 	);

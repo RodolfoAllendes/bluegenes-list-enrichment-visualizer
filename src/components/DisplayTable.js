@@ -1,30 +1,33 @@
 import React from 'react';
 
-// Definition of the EnrichmentPanel Component
-const WidgetList = ({ widgets, selectedWidget, setSelectedWidget }) => {
+const DisplayTable = ({ graphType, setGraphType }) => {
+	const availableTypes = [
+		{ name: 'Bar Graph', type: 'bar' },
+		{ name: 'HeatMap Graph', type: 'heatmap' }
+	];
+
 	return (
 		<div className="im-table relative">
 			<div className="dashboard">
 				<div className="pagination-bar">
-					<label className="pagination-label">Select Enrichment Widget:</label>
+					<label className="pagination-label">Select Display:</label>
 					<div className="btn-toolbar pagination-buttons">
 						<div className="btn-group">
 							<select
 								className="form-control input-sm"
 								onChange={ev => {
 									const { value } = ev.target;
-									setSelectedWidget(JSON.parse(value));
+									setGraphType(value);
 								}}
 							>
-								{widgets.map(w => {
-									const { title, name } = w;
+								{availableTypes.map(g => {
 									return (
 										<option
-											key={name}
-											value={JSON.stringify(w)}
-											selected={selectedWidget.name === name}
+											key={g.type}
+											value={g.type}
+											selected={graphType === g.name}
 										>
-											{title}
+											{g.name}
 										</option>
 									);
 								})}
@@ -37,4 +40,4 @@ const WidgetList = ({ widgets, selectedWidget, setSelectedWidget }) => {
 	);
 };
 
-export default WidgetList;
+export default DisplayTable;
