@@ -42,12 +42,24 @@ const PathwayTable = ({ pathways }) => {
 			</div>
 			<div className="table-container">
 				<table className="table table-condensed table-bordered table-striped">
-					<thead></thead>
-					<tbody>
+					<thead>
 						{pathways.length === 0 ? (
 							<tr key="no-data">
 								<td>No Enriched Pathways Found.</td>
 							</tr>
+						) : (
+							<tr>
+								<td>ID</td>
+								<td>Description</td>
+								<td>P-Value</td>
+								<td>Matches</td>
+								<td>Size</td>
+							</tr>
+						)}
+					</thead>
+					<tbody>
+						{pathways.length === 0 ? (
+							<tr></tr>
 						) : (
 							pathways.map(term => {
 								return (

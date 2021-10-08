@@ -11,6 +11,8 @@
 
 	.listEnrichmentVisualizerControls{
 		width: 100%;
+		display: flex;
+		flex-direction: column;
 		height: inherit;
 		overflow-y: auto;
 	}
@@ -20,6 +22,21 @@
 		// flex-direction: column;
 		width: 100%;
 		height: 50%;
+	}
+
+	div.singleControl {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	select{
+		width: 30%
+	}
+
+	input{
+		width: 10%
 	}
 
 

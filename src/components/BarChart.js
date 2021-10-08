@@ -10,45 +10,7 @@ const BarChart = ({ graphData, graphType }) => {
 					data={graphData}
 					indexBy="id"
 					margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
-					padding={0.3}
-					valueScale={{ type: 'linear' }}
-					indexScale={{ type: 'band', round: true }}
-					valueFormat={{ format: '', enabled: false }}
 					colors={{ scheme: 'nivo' }}
-					defs={[
-						{
-							id: 'dots',
-							type: 'patternDots',
-							background: 'inherit',
-							color: '#38bcb2',
-							size: 4,
-							padding: 1,
-							stagger: true
-						},
-						{
-							id: 'lines',
-							type: 'patternLines',
-							background: 'inherit',
-							color: '#eed312',
-							rotation: -45,
-							lineWidth: 6,
-							spacing: 10
-						}
-					]}
-					fill={[
-						{
-							match: {
-								id: 'fries'
-							},
-							id: 'dots'
-						},
-						{
-							match: {
-								id: 'sandwich'
-							},
-							id: 'lines'
-						}
-					]}
 					borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
 					axisTop={null}
 					axisRight={null}
@@ -64,7 +26,8 @@ const BarChart = ({ graphData, graphType }) => {
 						tickSize: 5,
 						tickPadding: 5,
 						tickRotation: 0,
-						legend: 'food',
+						tickValues: 5,
+						legend: '# of Present Genes',
 						legendPosition: 'middle',
 						legendOffset: -40
 					}}

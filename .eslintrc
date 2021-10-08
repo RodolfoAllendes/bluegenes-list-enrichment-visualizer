@@ -6,6 +6,7 @@
     "node": true,
     "jest": true
 	},
+	"parser": "babel-eslint",
 	"extends": [
     "eslint:recommended",
 		"plugin:react/recommended",
@@ -32,5 +33,10 @@
   },
   "globals": {
     "imjs": true
-  }
+  },
+	"settings":{
+		"react":{
+			"version": "detect"
+		}
+	}
 }

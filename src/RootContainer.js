@@ -1,121 +1,123 @@
 import React, { useEffect, useState } from 'react';
-import { getWidgets, queryData } from './query';
-import PathwayTable from './components/PathwayTable';
-import BarChart from './components/BarChart';
-import WidgetList from './components/WidgetList';
+import { getWidgets, getGeneList, queryData } from './query';
+import OrganismPanel from './components/OrganismPanel';
+import WidgetPanel from './components/WidgetPanel';
 import FilterPanel from './components/FilterPanel';
-import DisplayTable from './components/DisplayTable';
+import DisplayPanel from './components/DisplayPanel';
+// import PathwayTable from './components/PathwayTable';
+// import BarChart from './components/BarChart';
 
 const RootContainer = ({ service, entity }) => {
-	// state variable to handle loading of data
-	// const [loading, setLoading] = useState(true);
-	// state variable for the list of available enrichment widgets
+	const [selectedOrganism, setSelectedOrganism] = useState('H. sapiens');
+	const [geneList, setGeneList] = useState([]);
+
 	const [widgetList, setWidgetList] = useState([]);
-	// // state variable for currently selected widget
-	const [selectedWidget, setSelectedWidget] = useState({});
-	// state variable for tracking of filtering options
+	const [selectedWidget, setSelectedWidget] = useState(undefined);
 	const [filterOptions, setFilterOptions] = useState({
 		maxp: 0.05,
 		processFilter: 'biological_process',
 		correction: 'Holm-Bonferroni'
 	});
-	// pathway results (data) retrieved from the current widget
+
 	const [pathways, setPathways] = useState([]);
 	const [graphType, setGraphType] = useState('bar');
 	const [graphData, setGraphData] = useState([]);
 
-	// executed on load
+	// executed after initial rendering
 	// retrieve the list of enrichment widgets and initialize corresponding states
 	useEffect(() => {
-		getWidgets({ service })
-			.then(res => {
-				// filter out widgets that are not suitable for the type of list we are
-				// handling
-				const widgets = res.filter(
-					w =>
-						w.widgetType === 'enrichment' &&
-						w.targets.indexOf(entity.Gene.class) !== -1
-				);
-				setWidgetList(widgets);
-				// set the first widget of the list as selected, and fetch its data
-				if (widgets.length) {
-					const firstWidget = widgets[0];
-					setSelectedWidget(firstWidget);
-					getEnrichedPathways(firstWidget.name);
-				}
-				// setLoading(false);
-			})
-			.catch(() => {
-				// setLoading(false);
-			});
+		Promise.all([
+			getGeneList({
+				service,
+				genes: entity.Gene.value,
+				organism: selectedOrganism
+			}),
+			getWidgets({ service })
+		]).then(([geneList, widgets]) => {
+			let filteredWidgets = widgets.filter(
+				w =>
+					w.widgetType === 'enrichment' &&
+					w.targets.indexOf(entity.Gene.class) !== -1
+			);
+			setGeneList(geneList);
+			setSelectedWidget(filteredWidgets[0]);
+			setWidgetList(filteredWidgets);
+		});
 	}, []);
 
-	// executed everytime pathways changes
+	// executed everytime the target organism changes
 	useEffect(() => {
-		let gData = [];
-		pathways.forEach((d, i) => {
-			console.log(i, d);
-			// each bar in the bar graph needs a value
-			let bar = {
-				id: d.identifier,
-				value: d.matches,
-				tooltip: d.description
-			};
-			gData.push(bar);
-		});
-		console.log(gData);
-		setGraphData(gData);
-	}, [pathways]);
-
-	// executed everytime filterOptions changes
-	// useEffect(() => {
-	// 	getEnrichedPathways(selectedWidget.name);
-	// }, [filterOptions]);
+		getGeneList({
+			service,
+			genes: entity.Gene.value,
+			organism: selectedOrganism
+		}).then(res => setGeneList(res));
+	}, [selectedOrganism]);
 
 	// executed everytime selectedWidget changes
 	useEffect(() => {
-		getEnrichedPathways(selectedWidget.name);
+		if (selectedWidget !== undefined) {
+			getEnrichedPathways(selectedWidget.name);
+			document
+				.querySelector('select#processFilter')
+				.dispatchEvent(new Event('change', { bubbles: true }));
+		}
 	}, [selectedWidget]);
 
-	// function to retrieve the enriched pathways for the currently selected widget
-	// with the currently selected filters
+	// executed everytime pathways changes
+	// useEffect(() => {
+	// 	let gData = [];
+	// 	pathways.forEach((d, i) => {
+	// 		// each bar in the bar graph needs a value
+	// 		let bar = {
+	// 			id: d.identifier,
+	// 			value: d.matches,
+	// 			tooltip: d.description
+	// 		};
+	// 		gData.push(bar);
+	// 	});
+	// 	setGraphData(gData);
+	// }, [pathways]);
+
 	const getEnrichedPathways = widget => {
-		// setLoading(true);
 		setGraphData([]); // empty data for the graph, reloaded after setting pathways
 		queryData({
-			geneIds: entity.Gene.value,
+			geneIds: geneList,
 			service,
 			filterOptions,
 			widget
 		})
 			.then(res => {
-				// setLoading(false);
 				setPathways(res);
 			})
 			.catch(() => {
-				// setLoading(false);
 				setPathways([]);
 			});
 	};
 
 	return (
 		<div className="rootContainer">
-			<div className="report-item-tool">
-				<WidgetList
+			<div className="listEnrichmentVisualizerControls">
+				<OrganismPanel
+					selectedOrganism={selectedOrganism}
+					setSelectedOrganism={setSelectedOrganism}
+				/>
+				<WidgetPanel
 					widgets={widgetList}
 					selectedWidget={selectedWidget}
 					setSelectedWidget={setSelectedWidget}
 				/>
 				<FilterPanel
+					selectedWidget={selectedWidget}
 					filterOptions={filterOptions}
 					setFilterOptions={setFilterOptions}
 				/>
-				<PathwayTable pathways={pathways} />
-				<DisplayTable graphType={graphType} setGraphType={setGraphType} />
+				<DisplayPanel graphType={graphType} setGraphType={setGraphType} />
+				{/* <PathwayTable pathways={pathways} /> */}
 			</div>
-			<div className="listEnrichmentVisualizerGraph">
-				<BarChart graphData={graphData} graphType={graphType} />
-			</div>
+			{/* <div className="listEnrichmentVisualizerGraph">
+					<BarChart graphData={graphData} graphType={graphType} />
+				</div> */}
 		</div>
 	);
 };
