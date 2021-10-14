@@ -4,34 +4,32 @@ import OrganismPanel from './components/OrganismPanel';
 import WidgetPanel from './components/WidgetPanel';
 import FilterPanel from './components/FilterPanel';
 import DisplayPanel from './components/DisplayPanel';
-// import PathwayTable from './components/PathwayTable';
-// import BarChart from './components/BarChart';
+import PathwayTable from './components/PathwayTable';
+import BarChart from './components/BarChart';
 
 const RootContainer = ({ service, entity }) => {
+	
 	const [selectedOrganism, setSelectedOrganism] = useState('H. sapiens');
-	const [geneList, setGeneList] = useState([]);
-
-	const [widgetList, setWidgetList] = useState([]);
+	const [geneList, setGeneList] = useState(undefined);
 	const [selectedWidget, setSelectedWidget] = useState(undefined);
 	const [filterOptions, setFilterOptions] = useState({
-		maxp: 0.05,
-		processFilter: 'biological_process',
-		correction: 'Holm-Bonferroni'
+		maxp: 0.05,	processFilter: '', correction: 'Holm-Bonferroni'
 	});
-
 	const [pathways, setPathways] = useState([]);
 	const [graphType, setGraphType] = useState('bar');
 	const [graphData, setGraphData] = useState([]);
 
+
 	// executed after initial rendering
-	// retrieve the list of enrichment widgets and initialize corresponding states
 	useEffect(() => {
 		Promise.all([
+			// make the initial filtering of the gene list according to default organism
 			getGeneList({
 				service,
 				genes: entity.Gene.value,
 				organism: selectedOrganism
 			}),
+			// and get a list of enrichment widgets from the backend
 			getWidgets({ service })
 		]).then(([geneList, widgets]) => {
 			let filteredWidgets = widgets.filter(
@@ -45,7 +43,7 @@ const RootContainer = ({ service, entity }) => {
 		});
 	}, []);
 
-	// executed everytime the target organism changes
+	// handle changes in state for selectedOrganism
 	useEffect(() => {
 		getGeneList({
 			service,
@@ -54,7 +52,19 @@ const RootContainer = ({ service, entity }) => {
 		}).then(res => setGeneList(res));
 	}, [selectedOrganism]);
 
-	// executed everytime selectedWidget changes
+	// handle changes in the state of the
+	// geneList, selectedWidget or filterOptions
+	useEffect(() => {
+		// only retrieve enrichment results if the list and selected widgets are defined
+		if(geneList !== undefined && selectedWidget !== undefined){
+			
+			getEnrichedPathways(selectedWidget.name);
+		}
+	}, [geneList, selectedWidget, filterOptions]);
+
+	// handle the list of enrichment widgets - only modified at load time
+	const [widgetList, setWidgetList] = useState([]);
+	
 	useEffect(() => {
 		if (selectedWidget !== undefined) {
 			getEnrichedPathways(selectedWidget.name);
@@ -64,35 +74,36 @@ const RootContainer = ({ service, entity }) => {
 		}
 	}, [selectedWidget]);
 
-	// executed everytime pathways changes
-	// useEffect(() => {
-	// 	let gData = [];
-	// 	pathways.forEach((d, i) => {
-	// 		// each bar in the bar graph needs a value
-	// 		let bar = {
-	// 			id: d.identifier,
-	// 			value: d.matches,
-	// 			tooltip: d.description
-	// 		};
-	// 		gData.push(bar);
-	// 	});
-	// 	setGraphData(gData);
-	// }, [pathways]);
-
+	
+	
+	
 	const getEnrichedPathways = widget => {
-		setGraphData([]); // empty data for the graph, reloaded after setting pathways
+		 // empty data for the graph, reloaded after setting pathways
+		if(geneList.length === 0){
+			setPathways([]);
+			setGraphData([]);
+			return;
+		}
+
 		queryData({
 			geneIds: geneList,
 			service,
 			filterOptions,
 			widget
-		})
-			.then(res => {
-				setPathways(res);
-			})
-			.catch(() => {
-				setPathways([]);
+		}).then(res => {
+			let gd = [];
+			res.forEach(p => {
+				gd.push({
+					id: p.identifier,
+					matches: p.matches // need to calculate the proper data
+				});
 			});
+			setGraphData(gd);
+			setPathways(res);
+		}).catch(() => {
+			setPathways([]);
+			setGraphData([]);
+		});
 	};
 
 	return (
@@ -113,11 +124,11 @@ const RootContainer = ({ service, entity }) => {
 					setFilterOptions={setFilterOptions}
 				/>
 				<DisplayPanel graphType={graphType} setGraphType={setGraphType} />
-				{/* <PathwayTable pathways={pathways} /> */}
+				<PathwayTable pathways={pathways} />
 			</div>
-			{/* <div className="listEnrichmentVisualizerGraph">
+			<div className="listEnrichmentVisualizerGraph">
 					<BarChart graphData={graphData} graphType={graphType} />
-				</div> */}
+				</div>
 		</div>
 	);
 };

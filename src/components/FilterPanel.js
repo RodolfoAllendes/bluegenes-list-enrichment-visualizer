@@ -8,20 +8,12 @@ const FilterPanel = ({ selectedWidget, filterOptions, setFilterOptions }) => {
 		'None'
 	];
 
-	const [maxp, setMaxp] = useState(filterOptions.maxp);
-
 	const handleChange = ev => {
 		const { name, value } = ev.target;
 		setFilterOptions({
 			...filterOptions,
-			[name]: name == 'maxp' ? Number(value) : value
+			[name]: name === 'maxp' ? Number(value) : value
 		});
-	};
-
-	const handleInput = ev => {
-		const { value } = ev.target;
-		console.log(value);
-		if (value >= 0 && value <= 1) setMaxp(value);
 	};
 
 	return (
@@ -49,12 +41,11 @@ const FilterPanel = ({ selectedWidget, filterOptions, setFilterOptions }) => {
 				className="form-control"
 				name="maxp"
 				type="number"
-				value={maxp}
+				value={filterOptions.maxp}
 				min="0"
 				max="1"
 				step={0.01}
 				precision={2}
-				onInput={handleInput}
 				onChange={handleChange}
 			/>
 
@@ -76,11 +67,11 @@ const FilterPanel = ({ selectedWidget, filterOptions, setFilterOptions }) => {
 					selectedWidget.filters.split(',').map(f => (
 						<option key={f} value={f}>
 							{f}
-              </option>
+							</option>
 					))
-          ) : (
+					) : (
 					<></>
-          )}
+					)}
 			</select>
 		</div>
 	);

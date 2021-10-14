@@ -9,6 +9,7 @@ const BarChart = ({ graphData, graphType }) => {
 				<ResponsiveBar
 					data={graphData}
 					indexBy="id"
+					keys={['matches']}
 					margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
 					colors={{ scheme: 'nivo' }}
 					borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
@@ -63,19 +64,9 @@ const BarChart = ({ graphData, graphType }) => {
 				<ResponsiveHeatMap
 					data={graphData}
 					keys={[
-						'hot dog',
-						'burger',
-						'sandwich',
-						'kebab',
-						'fries',
-						'donut',
-						'junk',
-						'sushi',
-						'ramen',
-						'curry',
-						'udon'
+						'matches',
 					]}
-					indexBy="country"
+					indexBy="id"
 					margin={{ top: 100, right: 60, bottom: 60, left: 60 }}
 					forceSquare={true}
 					axisTop={{
