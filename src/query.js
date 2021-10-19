@@ -1,11 +1,73 @@
 /**
+ * 
+ * @param {*} param0 
+ * @returns 
+ */
+const queryAnnotationSize = ({ service, ids, widget }) => {
+	const tmService = new imjs.Service(service);
+	let query = {
+		from: 'Gene',
+		select: ['primaryIdentifier'],
+	
+	};
+	if (ids!== undefined){
+		query['where'] = [
+			{	path: widget.enrichIdentifier, op:'IS NOT NULL', values: 'IS NOT NULL', code: 'A'},
+			{ path: 'id', op: 'one of', values: ids, code: 'B' }
+		];
+		query['constraintLogic'] = 'A and B';
+	}
+	else{
+		query['where'] = [{ path: widget.enrichIdentifier, op:'IS NOT NULL', values: 'IS NOT NULL', code: 'A'}];
+	}
+
+	return new Promise((resolve, reject) => {
+		tmService.count(query)
+			.then(size => resolve(size))
+			.catch(() => reject(-1));
+	});
+}
+
+/**
+ * 
+ */
+const queryGenomeSize = ({ service }) => {
+	const tmService = new imjs.Service(service);
+	let backgroundSizeQuery = {
+		from: 'Gene',
+		select: ['primaryIdentifier'],
+	};
+	return new Promise((resolve, reject) =>{
+		tmService.count(backgroundSizeQuery)
+			.then(size => resolve(size))
+			.catch(() => reject(-1));
+	});
+}
+
+/**
+ * @param {Object} service
+ * @param {Array<Number>} ids
+ * @param {Object} widget 
+ * @param {Object} filterOptions
+ * @returns Promise 
+ */
+ const queryEnrichmentData = ({ service, ids, widget, correction, maxp, filter }) => {
+	const tmService = new imjs.Service(service);
+	let enrichQuery = {	ids, widget: widget.name, maxp, correction, filter, correction };
+	return new Promise((resolve, reject) => {
+		tmService.enrichment(enrichQuery)
+			.then(data => resolve(data))
+			.catch(() => reject('No enrichment data found!'));
+	});
+};
+/**
  * Filter the list of genes to include only elements that belong to the
  * specified organism
  * @param {Object} service object describing an intermine service
  * @param {Array<Number>} genes the complete list of genes
  * @param {String} organism the target organism used to filter the list of genes
  */
-const getGeneList = ({ service, genes, organism }) => {
+const queryGeneList = ({ service, genes, organism }) => {
 	const tmService = new imjs.Service(service);
 	const query = {
 		from: 'Gene',
@@ -17,8 +79,7 @@ const getGeneList = ({ service, genes, organism }) => {
 		constraintLogic: 'A and B'
 	};
 	return new Promise((resolve, reject) => {
-		tmService
-			.records(query)
+		tmService.records(query)
 			.then(res => {
 				let g = [];
 				res.map(item => g.push(item.objectId));
@@ -28,11 +89,10 @@ const getGeneList = ({ service, genes, organism }) => {
 	});
 };
 
-const getWidgets = ({ service }) => {
+const queryWidgets = ({ service }) => {
 	const tmService = new imjs.Service(service);
 	return new Promise((resolve, reject) => {
-		tmService
-			.fetchWidgets()
+		tmService.fetchWidgets()
 			.then(res => {
 				if (res.length === 0) reject('No widgets data found!');
 				resolve(res);
@@ -41,23 +101,6 @@ const getWidgets = ({ service }) => {
 	});
 };
 
-const queryData = ({ geneIds, service, filterOptions, widget }) => {
-	const tmService = new imjs.Service(service);
-	return new Promise((resolve, reject) => {
-		tmService
-			.enrichment({
-				ids: geneIds,
-				widget: widget,
-				maxp: filterOptions['maxp'],
-				filter: filterOptions['processFilter'], // can also be cellular_component or molecular_function
-				correction: filterOptions['correction']
-			})
-			.then(res => {
-				if (res === 0) reject('No enrichment data found!');
-				resolve(res);
-			})
-			.catch(() => reject('No enrichment data found!'));
-	});
-};
 
-export { getWidgets, getGeneList, queryData };
+
+export { queryAnnotationSize, queryEnrichmentData, queryGeneList, queryGenomeSize, queryWidgets };

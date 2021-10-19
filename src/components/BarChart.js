@@ -9,9 +9,10 @@ const BarChart = ({ graphData, graphType }) => {
 				<ResponsiveBar
 					data={graphData}
 					indexBy="id"
-					keys={['matches']}
+					keys={['matches', 'background']}
 					margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
 					colors={{ scheme: 'nivo' }}
+					groupMode='grouped'
 					borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
 					axisTop={null}
 					axisRight={null}

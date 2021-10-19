@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Definition of the Organism Selection Panel
-const OrganismPanel = ({ selectedOrganism, setSelectedOrganism }) => {
+const OrganismPanel = ({ organism, setOrganism }) => {
 	// valid organism names in TargetMine
 	const organismsValues = [
 		'H. sapiens', 
@@ -11,7 +11,7 @@ const OrganismPanel = ({ selectedOrganism, setSelectedOrganism }) => {
 	// handle the change of Organism
 	const handleChange = ev => {
 		const { value } = ev.target;
-		setSelectedOrganism(value);
+		setOrganism(value);
 	};
 	
 	return (
@@ -22,7 +22,7 @@ const OrganismPanel = ({ selectedOrganism, setSelectedOrganism }) => {
 				onChange={handleChange}
 			>
 				{organismsValues.map(o => (
-					<option key={o} value={o} selected={selectedOrganism.name === o}>
+					<option key={o} value={o} selected={organism.name === o}>
 						{o}
 					</option>
 				))}

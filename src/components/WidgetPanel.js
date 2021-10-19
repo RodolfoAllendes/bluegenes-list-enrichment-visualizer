@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Definition of the EnrichmentPanel Component
-const WidgetPanel = ({ widgets, selectedWidget, setSelectedWidget }) => {
+const WidgetPanel = ({ widgetList, widget, setWidget }) => {
 	return (
 		<div className="singleControl">
 			<label className="pagination-label">Select Enrichment Widget:</label>
@@ -9,16 +9,16 @@ const WidgetPanel = ({ widgets, selectedWidget, setSelectedWidget }) => {
 				className="form-control input-sm"
 				onChange={ev => {
 					const { value } = ev.target;
-					setSelectedWidget(JSON.parse(value));
+					setWidget(JSON.parse(value));
 				}}
 			>
-				{widgets.map(w => {
+				{widgetList.map(w => {
 					const { title, name } = w;
 					return (
 						<option
 							key={name}
 							value={JSON.stringify(w)}
-							selected={selectedWidget.name === name}
+							selected={widget.name === name}
 						>
 							{title}
 						</option>

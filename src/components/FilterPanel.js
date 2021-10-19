@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const FilterPanel = ({ selectedWidget, filterOptions, setFilterOptions }) => {
+const FilterPanel = ({ widget, correction, maxp, filter }) => {
 	const correctionValues = [
 		'Holm-Bonferroni',
 		'Benjamini Hochberg',
@@ -29,7 +29,7 @@ const FilterPanel = ({ selectedWidget, filterOptions, setFilterOptions }) => {
 					<option
 						key={c}
 						value={c}
-						selected={filterOptions['correction'] === c}
+						selected={correction === c}
 					>
 						{c}
 					</option>
@@ -41,7 +41,7 @@ const FilterPanel = ({ selectedWidget, filterOptions, setFilterOptions }) => {
 				className="form-control"
 				name="maxp"
 				type="number"
-				value={filterOptions.maxp}
+				value={maxp}
 				min="0"
 				max="1"
 				step={0.01}
@@ -57,14 +57,14 @@ const FilterPanel = ({ selectedWidget, filterOptions, setFilterOptions }) => {
 				onChange={handleChange}
 				disabled={
 					!(
-						selectedWidget &&
-						Object.prototype.hasOwnProperty.call(selectedWidget, 'filters')
+						widget &&
+						Object.prototype.hasOwnProperty.call(widget, 'filters')
 					)
 				}
 			>
-				{selectedWidget &&
-				Object.prototype.hasOwnProperty.call(selectedWidget, 'filters') ? (
-					selectedWidget.filters.split(',').map(f => (
+				{widget &&
+				Object.prototype.hasOwnProperty.call(widget, 'filters') ? (
+					widget.filters.split(',').map(f => (
 						<option key={f} value={f}>
 							{f}
 							</option>
