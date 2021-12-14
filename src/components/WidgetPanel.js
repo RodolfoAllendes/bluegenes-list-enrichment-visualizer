@@ -1,16 +1,19 @@
 import React from 'react';
 
-// Definition of the EnrichmentPanel Component
 const WidgetPanel = ({ widgetList, widget, setWidget }) => {
+
+	// handle the change of widget
+	const handleChange = ev => {
+		const { value } = ev.target;
+		setWidget(JSON.parse(value));
+	}
+
 	return (
 		<div className="singleControl">
 			<label className="pagination-label">Select Enrichment Widget:</label>
 			<select
 				className="form-control input-sm"
-				onChange={ev => {
-					const { value } = ev.target;
-					setWidget(JSON.parse(value));
-				}}
+				onChange={handleChange}
 			>
 				{widgetList.map(w => {
 					const { title, name } = w;
@@ -18,7 +21,7 @@ const WidgetPanel = ({ widgetList, widget, setWidget }) => {
 						<option
 							key={name}
 							value={JSON.stringify(w)}
-							selected={widget.name === name}
+							selected={widget !== undefined && widget.name === name}
 						>
 							{title}
 						</option>

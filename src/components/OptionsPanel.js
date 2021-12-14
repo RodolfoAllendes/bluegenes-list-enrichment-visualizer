@@ -1,6 +1,6 @@
 import React from 'react';
 
-const FilterPanel = ({ widget, correction, maxp, filter }) => {
+const OptionsPanel = ({ widget, correction, maxp, filter }) => {
 	const correctionValues = [
 		'Holm-Bonferroni',
 		'Benjamini Hochberg',
@@ -77,4 +77,4 @@ const FilterPanel = ({ widget, correction, maxp, filter }) => {
 	);
 };
 
-export default FilterPanel;
+export default OptionsPanel;

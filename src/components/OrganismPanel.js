@@ -1,6 +1,5 @@
 import React from 'react';
 
-// Definition of the Organism Selection Panel
 const OrganismPanel = ({ organism, setOrganism }) => {
 	// valid organism names in TargetMine
 	const organismsValues = [
