@@ -1,20 +1,35 @@
 import React from 'react';
 
-const OptionsPanel = ({ widget, correction, maxp, filter }) => {
+const OptionsPanel = ({ 
+	widget, 
+	correction, setCorrection,
+	maxp, setMaxp, 
+	filter, setFilter
+}) => {
+	// valid correction values in TargetMine
 	const correctionValues = [
 		'Holm-Bonferroni',
 		'Benjamini Hochberg',
 		'Bonferroni',
 		'None'
 	];
-
-	const handleChange = ev => {
-		const { name, value } = ev.target;
-		setFilterOptions({
-			...filterOptions,
-			[name]: name === 'maxp' ? Number(value) : value
-		});
+	// handle the change in correction
+	const handleCorrectionChange = ev => {
+		const { value } = ev.target;
+		setCorrection(value);
 	};
+	// handle change in maxp value
+	const handleMaxpChange = ev =>{
+		let { value, min, max } = ev.target;
+    value = Math.max(Number(min), Math.min(Number(max), Number(value)));
+		setMaxp(value);
+		console.log(value);
+	}
+	// handle change in filter value
+	const handleFilterChange = ev => {
+		const { value } = ev.target;
+		setFilter(value);
+	}
 
 	return (
 		<div className="singleControl">
@@ -23,7 +38,7 @@ const OptionsPanel = ({ widget, correction, maxp, filter }) => {
 			<select
 				className="form-control input-sm"
 				name={'correction'}
-				onChange={handleChange}
+				onChange={handleCorrectionChange}
 			>
 				{correctionValues.map(c => (
 					<option
@@ -46,7 +61,7 @@ const OptionsPanel = ({ widget, correction, maxp, filter }) => {
 				max="1"
 				step={0.01}
 				precision={2}
-				onChange={handleChange}
+				onChange={handleMaxpChange}
 			/>
 
 			<span>Filter</span>
@@ -54,7 +69,7 @@ const OptionsPanel = ({ widget, correction, maxp, filter }) => {
 				className="form-control input-sm"
 				id={'processFilter'}
 				name={'processFilter'}
-				onChange={handleChange}
+				onChange={handleFilterChange}
 				disabled={
 					!(
 						widget &&

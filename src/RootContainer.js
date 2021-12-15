@@ -42,21 +42,26 @@ const RootContainer = ({ service, entity }) => {
 		// queryAnnotationSize({ service, undefined, widget })
 	}, [genomeSize] );
 
-	// useEffect(() => {
-	// 	if( geneList !== undefined && geneList.length > 0 && widget !== undefined){
-	// 		Promise.all([
-	// 			queryAnnotationSize({ service, ids: geneList, widget }),
-	// 			queryEnrichmentData({	service, ids: geneList, widget, correction, maxp, filter })
-	// 		]).then(([as, ed]) => {
-	// 			setListAnnotationSize(as);
-	// 			setPathways(ed);
-	// 		});
-	// 	}
-	// 	else{
-	// 		setPathways([]);
-	// 	}
+	useEffect(() => {	
+		if( geneList !== undefined && geneList.length > 0 && widget !== undefined){
+			console.log('useEffect genelist/correction/maxp/filter', geneList);
+			Promise.all([
+				queryAnnotationSize({ service, ids: geneList, widget }),
+				queryEnrichmentData({	service, ids: geneList, widget, correction, maxp, filter })
+			]).then(([as, ed]) => {
+				setListAnnotationSize(as);
+				setPathways(ed);
+			}).catch(()=>{
+				setListAnnotationSize(-1);
+				setPathways([]);	
+			});
+		}
+		else{
+			setListAnnotationSize(-1);
+			setPathways([]);
+		}
 
-	// }, [geneList]);
+	}, [geneList, correction, maxp, filter]);
 
 	useEffect(() => {
 		
@@ -71,26 +76,50 @@ const RootContainer = ({ service, entity }) => {
 
 	}, [pathways]);
 
-	// useEffect(() => {
-	// 	queryGeneList({ service, genes: entity.Gene.value, organism })
-	// 		.then(res => {
-	// 			setGeneList(res)
-	// 		});
-	// }, [organism]);
+	useEffect(() => {
+		
+	}, [graphData]);
 
 	useEffect(() => {
-		if(geneList !== undefined && widget !== undefined){
-			console.log(geneList);
-			queryEnrichmentData({	service, ids: geneList, widget, correction, maxp, filter })
-				.then(ed => setPathways(ed));
+		console.log('useEffect organims', organism);
+		queryGeneList({ service, genes: entity.Gene.value, organism })
+			.then(res => setGeneList(res));
+	}, [organism]);
+
+	useEffect(() => {
+
+		// change the filter values (these depend on widget)
+		if(widget && Object.prototype.hasOwnProperty.call(widget, 'filters')){
+			console.log(widget.filters);
+			setFilter(widget.filters.split(',')[0]);
 		}
+
+		// setFilter();
+	// 	if(geneList !== undefined && geneList.length > 0 && widget !== undefined){
+	// 		console.log('useEffect widget', widget);
+	// 		Promise.all([
+	// 			queryAnnotationSize({ service, ids: geneList, widget }),
+	// 			queryEnrichmentData({	service, ids: geneList, widget, correction, maxp, filter })
+	// 		]).then(([as,ed]) => {
+	// 			setListAnnotationSize(as);
+	// 			setPathways(ed)
+	// 		}).catch(() => {
+	// 			setListAnnotationSize(-1);
+	// 			setPathways([]);
+	// 		});
+	// 	}
+	// 	else{
+	// 		setListAnnotationSize(-1);
+	// 		setPathways([]);
+	// 	}
+
 	}, [widget]);
 
 	useEffect(() => {
 		if( widgetList.length > 0 )
 			setWidget(widgetList[0]);
 	}, [widgetList]);
-	
+
 	return (
 		<div className="rootContainer">
 			<div className="listEnrichmentVisualizerControls">
@@ -106,8 +135,11 @@ const RootContainer = ({ service, entity }) => {
 				<OptionsPanel
 					widget={widget}
 					correction={correction}
+					setCorrection={setCorrection}
 					maxp={maxp}
+					setMaxp={setMaxp}
 					filter={filter}
+					setFilter={setFilter}
 				/>
 				<DisplayPanel graphType={graphType} setGraphType={setGraphType} />
 				<PathwayTable pathways={pathways} /> 

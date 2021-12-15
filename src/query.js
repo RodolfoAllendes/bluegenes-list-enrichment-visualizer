@@ -54,11 +54,17 @@ const queryGenomeSize = ({ service }) => {
  */
  const queryEnrichmentData = ({ service, ids, widget, correction, maxp, filter }) => {
 	const tmService = new imjs.Service(service);
-	console.log(ids);
 	return new Promise((resolve,reject) => {
-		tmService.enrichment({ ids, widget: widget.name, maxp, correction })
-		.then(data => resolve(data))
-		.catch(() => reject('No enrichment data found!'));
+		if(filter !== undefined){
+			tmService.enrichment({ ids, widget: widget.name, maxp, correction, filter })
+			.then(data => resolve(data))
+			.catch(() => reject('No enrichment data found!'));
+		}
+		else{
+			tmService.enrichment({ ids, widget: widget.name, maxp, correction })
+			.then(data => resolve(data))
+			.catch(() => reject('No enrichment data found!'));
+		}
 	});
 }
 
