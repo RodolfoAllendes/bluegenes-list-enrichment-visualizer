@@ -54,28 +54,13 @@ const queryGenomeSize = ({ service }) => {
  */
  const queryEnrichmentData = ({ service, ids, widget, correction, maxp, filter }) => {
 	const tmService = new imjs.Service(service);
-	const query = {
-		from: 'Gene',
-		select: ['primaryIdentifier'],
-		where: [{ path: 'primaryIdentifier', op: 'one of', values: ids }]
-	}
-
+	console.log(ids);
 	return new Promise((resolve,reject) => {
-		tmService.records(query)
-			.then(records => {
-				return (records.map(item => item.objectId));
-			})
-			.then(data => {
-				resolve(tmService.enrichment({
-					ids: data,
-					widget: widget.name,
-					maxp,
-					correction
-				}));
-			})
-			.catch(() => reject('No enrichment data found!'));
+		tmService.enrichment({ ids, widget: widget.name, maxp, correction })
+		.then(data => resolve(data))
+		.catch(() => reject('No enrichment data found!'));
 	});
-};
+}
 
 /**
  * Filter the list of genes to include only elements that belong to the
@@ -90,18 +75,14 @@ const queryGeneList = ({ service, genes, organism }) => {
 		from: 'Gene',
 		select: ['primaryIdentifier'],
 		where: [
-			{ path: 'primaryIdentifier', op: 'one of', values: genes, code: 'A' },
+			{ path: 'id', op: 'one of', values: genes, code: 'A' },
 			{ path: 'organism.shortName', op: '=', value: organism, code: 'B' }
 		],
 		constraintLogic: 'A and B'
 	};
 	return new Promise((resolve, reject) => {
 		tmService.records(query)
-			.then(res => {
-				let g = [];
-				res.map(item => g.push(item.primaryIdentifier));
-				resolve(g);
-			})
+			.then(res => resolve(res.map(item => item.objectId)))
 			.catch(() => reject('No matching IDs'));
 	});
 };

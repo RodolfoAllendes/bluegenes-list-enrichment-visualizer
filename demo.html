@@ -51,22 +51,30 @@
     	// THIS LINE IS THE IMPORTANT BIT. YOU SHOULDN'T NEED TO EDIT IT
     	// the method signature should match the signature in src/index.js
     	$.ajax('config.json').then(function(config) {
-				var dataForTool = {
-          Gene: {
-            class: 'Gene',
-            format: 'ids',
-            value: [580, 7157, 7248, 7249, 11151, 1124] // primaryIdentifier
-						// value: [7241635, 7250396, 7524873, 7524952, 7738786, 7783035 ] //objectID
-					}
-    		};
-    		blugenesListEnrichmentVisualizer.main(
-    			elem,
-          imService,
-          dataForTool,
-          toolState,
-          config,
-          navigate
-        );
+				const tmService = new imjs.Service(imService);
+				const query = {
+					from: 'Gene',
+					select: ['primaryIdentifier'],
+					where: [{path: 'primaryIdentifier', op: 'one of', values: [580, 7157, 7248, 7249, 11151, 1124] }]
+				}
+				tmService.records(query).then(data => {
+					let value = data.map(item => item.objectId);
+					var dataForTool = {
+						Gene: {
+							class: 'Gene',
+							format: 'ids',
+							value
+						}
+    			};
+    			blugenesListEnrichmentVisualizer.main(
+    				elem,
+          	imService,
+          	dataForTool,
+          	toolState,
+          	config,
+          	navigate
+        	);
+				});
     	});
     };
   </script>

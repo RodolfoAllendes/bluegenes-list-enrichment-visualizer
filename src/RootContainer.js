@@ -25,9 +25,6 @@ const RootContainer = ({ service, entity }) => {
 	const [filter, setFilter] = useState('');
 	const [graphType, setGraphType] = useState('bar');
 	
-	/**
-	 * Call background information on loading of the application
-	 */
 	useEffect(() => {
 		Promise.all([
 			queryWidgets({ service, type: 'enrichment', cls: entity.Gene.class }),
@@ -35,69 +32,45 @@ const RootContainer = ({ service, entity }) => {
 			queryGeneList({	service, genes: entity.Gene.value, organism	})
 			// and get a list of enrichment widgets from the backend
 		]).then(([widgets, genomeSize, genes]) => {
-			// console.log('widgets', widgets);
-			// console.log('genomeSize', genomeSize);
-			// console.log('genes', genes);
-			// setWidget(widgets[0]);
 			setWidgetList(widgets);
 			setGeneList(genes);
 			setGenomeSize(genomeSize);
 		});
 	}, []);
 
-	/* handle the change in genomeSize */
 	useEffect(() => {
-		console.log('useEffect genomeSize');
 		// queryAnnotationSize({ service, undefined, widget })
 	}, [genomeSize] );
 
-	/**
-	 * Handle changes in the list of available list of genes (geneList)
-	 */
-	useEffect(() => {
-		console.log('useEffect geneList', geneList);
-		if( geneList !== undefined && geneList.length > 0 && widget !== undefined){
-			Promise.all([
-				queryAnnotationSize({ service, ids: geneList, widget }),
-				queryEnrichmentData({	service, ids: geneList, widget, correction, maxp, filter })
-			]).then(([as, ed]) => {
-				setListAnnotationSize(as);
-				setPathways(ed);
-			});
-		}
-		else{
-			setPathways([]);
-		}
+	// useEffect(() => {
+	// 	if( geneList !== undefined && geneList.length > 0 && widget !== undefined){
+	// 		Promise.all([
+	// 			queryAnnotationSize({ service, ids: geneList, widget }),
+	// 			queryEnrichmentData({	service, ids: geneList, widget, correction, maxp, filter })
+	// 		]).then(([as, ed]) => {
+	// 			setListAnnotationSize(as);
+	// 			setPathways(ed);
+	// 		});
+	// 	}
+	// 	else{
+	// 		setPathways([]);
+	// 	}
 
-	}, [geneList]);
+	// }, [geneList]);
 
-	/**
-	 * handle change in the number of annotated genes that belong to the list
-	 */
 	useEffect(() => {
-		console.log('useEffect listAnnotationSize', listAnnotationSize);
-		/* have to modify the graph */
+		
 	}, [listAnnotationSize]);
 
-	/**
-	 * handle change in the number of annotated genes in the whole genome
-	 */
 	useEffect(() => {
-		console.log('useEffect genomeAnnotationSize', genomeAnnotationSize);
-		/* have to change the graph */
+		
 	}, [genomeAnnotationSize]);
 
-	/**
-	 * handle the change in enriched elements
-	 */
 	useEffect(() => {
-		console.log('useEffect pathways', pathways);
+		
 
 	}, [pathways]);
 
-	/**
-	 * Handle changes in the organism selected by the user
-	 */
 	// useEffect(() => {
 	// 	queryGeneList({ service, genes: entity.Gene.value, organism })
 	// 		.then(res => {
@@ -105,16 +78,12 @@ const RootContainer = ({ service, entity }) => {
 	// 		});
 	// }, [organism]);
 
-	/**
-	 * handle changes in the enrichment widget 
-	 */ 
 	useEffect(() => {
-		console.log('useEffect setWidget', widget);
-		// only retrieve enrichment results if the list and selected widgets are defined
-		// if(geneList !== undefined && geneList.length !== 0 && widget !== undefined){
-		// 	getListAnnotationSize(widget, filter);
-		// 	getEnrichedPathways(widget);
-		// }
+		if(geneList !== undefined && widget !== undefined){
+			console.log(geneList);
+			queryEnrichmentData({	service, ids: geneList, widget, correction, maxp, filter })
+				.then(ed => setPathways(ed));
+		}
 	}, [widget]);
 
 	useEffect(() => {
@@ -122,18 +91,6 @@ const RootContainer = ({ service, entity }) => {
 			setWidget(widgetList[0]);
 	}, [widgetList]);
 	
-	// /**
-	//  * 
-	//  */
-	// useEffect(() => {
-	// 	if (selectedWidget !== undefined) {
-	// 		getEnrichedPathways(selectedWidget);
-	// 		document
-	// 			.querySelector('select#processFilter')
-	// 			.dispatchEvent(new Event('change', { bubbles: true }));
-	// 	}
-	// }, [selectedWidget]);
-
 	return (
 		<div className="rootContainer">
 			<div className="listEnrichmentVisualizerControls">
@@ -159,7 +116,7 @@ const RootContainer = ({ service, entity }) => {
 				<BarChart graphData={graphData} graphType={graphType} />
 			</div>
 		</div>
-	);
+	)
 };
 
 export default RootContainer;
