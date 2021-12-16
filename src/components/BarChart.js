@@ -29,7 +29,7 @@ const BarChart = ({ graphData, graphType }) => {
 						tickPadding: 5,
 						tickRotation: 0,
 						tickValues: 5,
-						legend: '# of Present Genes',
+						legend: 'Proportion of assigned genes (%)',
 						legendPosition: 'middle',
 						legendOffset: -40
 					}}

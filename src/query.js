@@ -13,7 +13,7 @@ const queryAnnotationSize = ({ service, ids, widget }) => {
 	if (ids!== undefined) {
 		query['where'] = [
 			{	path: widget.enrichIdentifier, op:'IS NOT NULL', values: 'IS NOT NULL', code: 'A'},
-			{ path: 'primaryIdentifier', op: 'one of', values: ids, code: 'B' }
+			{ path: 'id', op: 'one of', values: ids, code: 'B' }
 		];
 		query['constraintLogic'] = 'A and B';
 	}
@@ -22,22 +22,6 @@ const queryAnnotationSize = ({ service, ids, widget }) => {
 	}
 	return new Promise((resolve, reject) => {
 		tmService.count(query)
-			.then(size => resolve(size))
-			.catch(() => reject(-1));
-	});
-}
-
-/**
- * 
- */
-const queryGenomeSize = ({ service }) => {
-	const tmService = new imjs.Service(service);
-	let backgroundSizeQuery = {
-		from: 'Gene',
-		select: ['primaryIdentifier'],
-	};
-	return new Promise((resolve, reject) =>{
-		tmService.count(backgroundSizeQuery)
 			.then(size => resolve(size))
 			.catch(() => reject(-1));
 	});
@@ -116,4 +100,4 @@ const queryWidgets = ({ service, type, cls }) => {
 	});
 };
 
-export { queryAnnotationSize, queryEnrichmentData, queryGeneList, queryGenomeSize, queryWidgets };
+export { queryAnnotationSize, queryEnrichmentData, queryGeneList, queryWidgets };

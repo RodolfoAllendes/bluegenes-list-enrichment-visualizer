@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { queryAnnotationSize, queryGenomeSize, queryEnrichmentData, queryGeneList, queryWidgets } from './query';
+import { queryAnnotationSize, queryEnrichmentData, queryGeneList, queryWidgets } from './query';
 import OrganismPanel from './components/OrganismPanel';
 import WidgetPanel from './components/WidgetPanel';
 import OptionsPanel from './components/OptionsPanel';
@@ -9,7 +9,6 @@ import BarChart from './components/BarChart';
 
 const RootContainer = ({ service, entity }) => {
 	// hooks for background information required by the application
-	const [genomeSize, setGenomeSize] = useState(-1);
 	const [geneList, setGeneList] = useState(undefined);
 	const [listAnnotationSize, setListAnnotationSize] = useState(-1);
 	const [genomeAnnotationSize, setGenomeAnnotationSize] = useState(-1);
@@ -26,99 +25,108 @@ const RootContainer = ({ service, entity }) => {
 	const [graphType, setGraphType] = useState('bar');
 	
 	useEffect(() => {
+		console.log('useEffect mount');
 		Promise.all([
 			queryWidgets({ service, type: 'enrichment', cls: entity.Gene.class }),
-			queryGenomeSize({ service }),
 			queryGeneList({	service, genes: entity.Gene.value, organism	})
-			// and get a list of enrichment widgets from the backend
-		]).then(([widgets, genomeSize, genes]) => {
+		]).then(([widgets, genes]) => {
 			setWidgetList(widgets);
+			setWidget(widgets[0]);
 			setGeneList(genes);
-			setGenomeSize(genomeSize);
 		});
 	}, []);
 
 	useEffect(() => {
-		// queryAnnotationSize({ service, undefined, widget })
-	}, [genomeSize] );
-
-	useEffect(() => {	
-		if( geneList !== undefined && geneList.length > 0 && widget !== undefined){
-			console.log('useEffect genelist/correction/maxp/filter', geneList);
-			Promise.all([
-				queryAnnotationSize({ service, ids: geneList, widget }),
-				queryEnrichmentData({	service, ids: geneList, widget, correction, maxp, filter })
-			]).then(([as, ed]) => {
-				setListAnnotationSize(as);
-				setPathways(ed);
-			}).catch(()=>{
-				setListAnnotationSize(-1);
-				setPathways([]);	
-			});
-		}
-		else{
-			setListAnnotationSize(-1);
-			setPathways([]);
-		}
-
-	}, [geneList, correction, maxp, filter]);
-
-	useEffect(() => {
-		
-	}, [listAnnotationSize]);
-
-	useEffect(() => {
-		
-	}, [genomeAnnotationSize]);
-
-	useEffect(() => {
-		
-
-	}, [pathways]);
-
-	useEffect(() => {
-		
-	}, [graphData]);
-
-	useEffect(() => {
-		console.log('useEffect organims', organism);
-		queryGeneList({ service, genes: entity.Gene.value, organism })
-			.then(res => setGeneList(res));
-	}, [organism]);
-
-	useEffect(() => {
-
-		// change the filter values (these depend on widget)
-		if(widget && Object.prototype.hasOwnProperty.call(widget, 'filters')){
-			console.log(widget.filters);
-			setFilter(widget.filters.split(',')[0]);
-		}
-
-		// setFilter();
-	// 	if(geneList !== undefined && geneList.length > 0 && widget !== undefined){
-	// 		console.log('useEffect widget', widget);
-	// 		Promise.all([
-	// 			queryAnnotationSize({ service, ids: geneList, widget }),
-	// 			queryEnrichmentData({	service, ids: geneList, widget, correction, maxp, filter })
-	// 		]).then(([as,ed]) => {
-	// 			setListAnnotationSize(as);
-	// 			setPathways(ed)
-	// 		}).catch(() => {
-	// 			setListAnnotationSize(-1);
-	// 			setPathways([]);
-	// 		});
-	// 	}
-	// 	else{
-	// 		setListAnnotationSize(-1);
-	// 		setPathways([]);
-	// 	}
-
+		if( widget !== undefined ){
+			console.log('useEffect widget', widget);
+			queryAnnotationSize({ service, undefined, widget }).then(size => setGenomeAnnotationSize(size));
+			if( geneList !== undefined && geneList.length > 0 )
+				queryAnnotationSize({ service, ids:geneList, widget}).then(size => setListAnnotationSize(size));
+			if( Object.prototype.hasOwnProperty.call(widget, 'filters') )
+				setFilter(widget.filters.split(',')[0]);
+			else
+			queryEnrichmentData(
+				{	service, ids: geneList, widget, correction, maxp, filter }
+			).then(paths => setPathways(paths))
+			.catch(()=> setPathways([]));
+		}	
 	}, [widget]);
 
 	useEffect(() => {
-		if( widgetList.length > 0 )
-			setWidget(widgetList[0]);
-	}, [widgetList]);
+		if( geneList!== undefined ){
+			console.log('useEffect geneList', geneList);
+			if( widget !== undefined && geneList.length > 0 ){
+				queryAnnotationSize(
+					{ service, ids:geneList, widget }
+				).then(size => setListAnnotationSize(size));	
+				queryEnrichmentData(
+					{	service, ids: geneList, widget, correction, maxp, filter }
+				).then(paths => setPathways(paths))
+				.catch(()=> setPathways([]));
+			}
+		}
+	}, [geneList]);
+
+	useEffect(() => {	
+		if( geneList !== undefined && geneList.length > 0 && widget !== undefined){
+			console.log('useEffectcorrection/maxp/filter', geneList);
+			queryEnrichmentData({	service, ids: geneList, widget, correction, maxp, filter })
+			.then(ed =>	setPathways(ed))
+			.catch(()=> setPathways([]))
+			;
+		}
+	}, [correction, maxp, filter]);
+
+	useEffect(() => {
+		if( listAnnotationSize !== -1 && genomeAnnotationSize !== -1){
+
+		 console.log('useEffect pathways', pathways);
+
+		let gd = []
+		pathways.map(p => {
+			gd.push({
+				'id': p.identifier,
+				'matches': p.matches/listAnnotationSize,
+				'background': p.populationAnnotationCount/genomeAnnotationSize
+			});
+		});
+		setGraphData(gd);
+	}
+	}, [pathways]);
+
+	useEffect(() => {
+		console.log('useEffect organims', organism);
+		if(widget !== undefined ){
+			Promise.all([
+				queryGeneList({ service, genes: entity.Gene.value, organism }),
+				queryAnnotationSize({ service, undefined, widget  })
+			]).then(([gl,as]) => {
+				setGeneList(gl);
+				setGenomeAnnotationSize(as);
+			});
+		}
+		else
+			queryGeneList({ service, genes: entity.Gene.value, organism }).then(gl => setGeneList(gl));
+	}, [organism]);
+
+	useEffect(() => {
+		console.log('redraw', graphData);
+	}, [graphData]);
+	
+
+	useEffect(() => {
+		if( pathways.length > 0 ){
+			let gd = [];
+			pathways.map(p => {
+				gd.push({
+				'id': p.identifier,
+				'matches': p.matches/listAnnotationSize,
+				'background': p.populationAnnotationCount/genomeAnnotationSize
+				});
+			});
+			setGraphData(gd);
+		}
+	}, [listAnnotationSize, genomeAnnotationSize]);
 
 	return (
 		<div className="rootContainer">
@@ -151,4 +159,4 @@ const RootContainer = ({ service, entity }) => {
 	)
 };
 
-export default RootContainer;
+export default RootContainer
