@@ -10,6 +10,7 @@ import BarChart from './components/BarChart';
 const RootContainer = ({ service, entity }) => {
 	// hooks for background information required by the application
 	const [geneList, setGeneList] = useState(undefined);
+	const [geneSymbolList, setGeneSymbolList] = useState(undefined);
 	const [listAnnotationSize, setListAnnotationSize] = useState(-1);
 	const [genomeAnnotationSize, setGenomeAnnotationSize] = useState(-1);
 	const [pathways, setPathways] = useState([]);
@@ -25,14 +26,16 @@ const RootContainer = ({ service, entity }) => {
 	const [graphType, setGraphType] = useState('bar');
 	
 	useEffect(() => {
-		console.log('useEffect mount');
 		Promise.all([
 			queryWidgets({ service, type: 'enrichment', cls: entity.Gene.class }),
 			queryGeneList({	service, genes: entity.Gene.value, organism	})
 		]).then(([widgets, genes]) => {
+			let gids = genes.map(item => item.id);
+			let gsym = genes.map(item => item.symbol);
 			setWidgetList(widgets);
 			setWidget(widgets[0]);
-			setGeneList(genes);
+			setGeneList(gids);
+			setGeneSymbolList(gsym);
 		});
 	}, []);
 
@@ -79,19 +82,23 @@ const RootContainer = ({ service, entity }) => {
 
 	useEffect(() => {
 		if( listAnnotationSize !== -1 && genomeAnnotationSize !== -1){
-
-		 console.log('useEffect pathways', pathways);
-
-		let gd = []
-		pathways.map(p => {
-			gd.push({
-				'id': p.identifier,
-				'matches': p.matches/listAnnotationSize,
-				'background': p.populationAnnotationCount/genomeAnnotationSize
+			console.log('useEffect pathways', pathways);
+			let gd = [];
+			
+			pathways.map(p => {
+				let item = {
+					'id': p.identifier,
+					'matches': p.matches/listAnnotationSize,
+					'background': p.populationAnnotationCount/genomeAnnotationSize,
+					
+				};
+				geneList.forEach(g => {
+					item[g+'Color'] = p.genes.has(g) ? 'green' : 'red';
+				});
+				gd.push(item);
 			});
-		});
-		setGraphData(gd);
-	}
+			setGraphData(gd);
+		}
 	}, [pathways]);
 
 	useEffect(() => {
@@ -101,12 +108,21 @@ const RootContainer = ({ service, entity }) => {
 				queryGeneList({ service, genes: entity.Gene.value, organism }),
 				queryAnnotationSize({ service, undefined, widget  })
 			]).then(([gl,as]) => {
-				setGeneList(gl);
+				let gids = gl.map(item => item.id);
+				let gsym = gl.map(item => item.symbol);
+				setGeneList(gids);
+				setGeneSymbolList(gsym);
 				setGenomeAnnotationSize(as);
 			});
 		}
 		else
-			queryGeneList({ service, genes: entity.Gene.value, organism }).then(gl => setGeneList(gl));
+			queryGeneList({ service, genes: entity.Gene.value, organism })
+				.then(gl => {
+					let gids = gl.map(item => item.id);
+					let gsym = gl.map(item => item.symbol);
+					setGeneList(gids);
+					setGeneSymbolList(gsym);
+				});
 	}, [organism]);
 
 	useEffect(() => {
@@ -118,11 +134,17 @@ const RootContainer = ({ service, entity }) => {
 		if( pathways.length > 0 ){
 			let gd = [];
 			pathways.map(p => {
-				gd.push({
-				'id': p.identifier,
-				'matches': p.matches/listAnnotationSize,
-				'background': p.populationAnnotationCount/genomeAnnotationSize
+				let item = {
+					'id': p.identifier,
+					'matches': p.matches/listAnnotationSize,
+					'background': p.populationAnnotationCount/genomeAnnotationSize,
+					
+				};
+				geneSymbolList.forEach(g => {
+					item[g] = p.genes.has(g) ? 1 : 0;
+					item[g+'Color'] = p.genes.has(g) ? 'green' : 'red';
 				});
+				gd.push(item);
 			});
 			setGraphData(gd);
 		}
@@ -153,7 +175,7 @@ const RootContainer = ({ service, entity }) => {
 				<PathwayTable pathways={pathways} /> 
 			</div>
 			<div className="listEnrichmentVisualizerGraph">
-				<BarChart graphData={graphData} graphType={graphType} />
+				<BarChart graphData={graphData} graphType={graphType} keys={geneSymbolList} />
 			</div>
 		</div>
 	)

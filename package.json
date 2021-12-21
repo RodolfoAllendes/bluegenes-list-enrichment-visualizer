@@ -16,7 +16,7 @@
   },
   "husky": {
     "hooks": {
-    	"pre-push": "npm test"
+      "pre-push": "npm test"
     }
   },
   "lint-staged": {
@@ -31,6 +31,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@babel/runtime": "^7.10.5",
     "@nivo/bar": "^0.73.1",
     "@nivo/core": "^0.73.0",
     "@nivo/heatmap": "^0.73.0",
@@ -39,6 +40,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.16.5",
     "@babel/preset-env": "^7.4.4",
     "@babel/preset-react": "^7.0.0",
     "@types/jest": "^24.0.13",

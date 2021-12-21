@@ -36,20 +36,40 @@ const queryAnnotationSize = ({ service, ids, widget }) => {
  * @param {} filter
  * @returns Promise 
  */
- const queryEnrichmentData = ({ service, ids, widget, correction, maxp, filter }) => {
+ const queryEnrichmentData = async ({service, ids, widget, correction, maxp, filter}) => {
 	const tmService = new imjs.Service(service);
-	return new Promise((resolve,reject) => {
-		if(filter !== undefined){
-			tmService.enrichment({ ids, widget: widget.name, maxp, correction, filter })
-			.then(data => resolve(data))
-			.catch(() => reject('No enrichment data found!'));
+	filter = (filter !== undefined) ? filter : '';
+	
+	try{
+		let data = await tmService.enrichment({	ids, widget: widget.name, maxp, correction, filter });
+		let pathIDs = data.map(item => item.identifier);
+		
+		const query = {
+			from: 'Gene',
+			select: ['symbol', widget.enrichIdentifier],
+			where: [
+				{ path: widget.enrichIdentifier, op: 'one of', values: pathIDs, code: 'A' },
+				{ path: 'id', op: 'one of', values: ids, code: 'B' },
+			],
+			constraintLogic: 'A and B'
 		}
-		else{
-			tmService.enrichment({ ids, widget: widget.name, maxp, correction })
-			.then(data => resolve(data))
-			.catch(() => reject('No enrichment data found!'));
-		}
-	});
+		const paths = await tmService.rows(query);
+		let genes = new Map();
+		paths.forEach( p => {
+			if( !genes.has(p[1]) )
+				genes.set(p[1], new Set([p[0]]))
+			else
+				genes.get(p[1]).add(p[0]);
+		});
+		// result.
+		data = data.map(d => { return {...d, 'genes': genes.get(d.identifier)}; });
+	
+		console.log(data);
+		return data;
+	}
+	catch(error){
+		return Promise.reject('No enrichment data found!');
+	}
 }
 
 /**
@@ -63,7 +83,7 @@ const queryGeneList = ({ service, genes, organism }) => {
 	const tmService = new imjs.Service(service);
 	const query = {
 		from: 'Gene',
-		select: ['primaryIdentifier'],
+		select: ['primaryIdentifier', 'symbol'],
 		where: [
 			{ path: 'id', op: 'one of', values: genes, code: 'A' },
 			{ path: 'organism.shortName', op: '=', value: organism, code: 'B' }
@@ -72,7 +92,7 @@ const queryGeneList = ({ service, genes, organism }) => {
 	};
 	return new Promise((resolve, reject) => {
 		tmService.records(query)
-			.then(res => resolve(res.map(item => item.objectId)))
+			.then(res => resolve(res.map(item => ({id: item.objectId, symbol: item.symbol}) )))
 			.catch(() => reject('No matching IDs'));
 	});
 };

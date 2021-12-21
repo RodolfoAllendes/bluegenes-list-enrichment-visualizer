@@ -2,7 +2,7 @@ import React from 'react';
 import { ResponsiveBar } from '@nivo/bar';
 import { ResponsiveHeatMap } from '@nivo/heatmap';
 
-const BarChart = ({ graphData, graphType }) => {
+const BarChart = ({ graphData, graphType, keys }) => {
 	return (
 		<>
 			{graphType === 'bar' ? (
@@ -64,9 +64,7 @@ const BarChart = ({ graphData, graphType }) => {
 			) : (
 				<ResponsiveHeatMap
 					data={graphData}
-					keys={[
-						'matches',
-					]}
+					keys={keys}
 					indexBy="id"
 					margin={{ top: 100, right: 60, bottom: 60, left: 60 }}
 					forceSquare={true}
