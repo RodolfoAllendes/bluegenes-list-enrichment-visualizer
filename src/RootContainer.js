@@ -90,9 +90,9 @@ const RootContainer = ({ service, entity }) => {
 					'id': p.identifier,
 					'matches': p.matches/listAnnotationSize,
 					'background': p.populationAnnotationCount/genomeAnnotationSize,
-					
 				};
-				geneList.forEach(g => {
+				geneSymbolList.forEach(g => {
+					item[g] = p.genes.has(g) ? 1 : 0;
 					item[g+'Color'] = p.genes.has(g) ? 'green' : 'red';
 				});
 				gd.push(item);

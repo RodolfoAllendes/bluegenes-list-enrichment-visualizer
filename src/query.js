@@ -61,7 +61,6 @@ const queryAnnotationSize = ({ service, ids, widget }) => {
 			else
 				genes.get(p[1]).add(p[0]);
 		});
-		// result.
 		data = data.map(d => { return {...d, 'genes': genes.get(d.identifier)}; });
 	
 		console.log(data);
