@@ -20,7 +20,7 @@ const BarChart = ({ graphData, graphType, keys }) => {
 						tickSize: 5,
 						tickPadding: 5,
 						tickRotation: 0,
-						legend: 'country',
+						legend: 'Pathway',
 						legendPosition: 'middle',
 						legendOffset: 32
 					}}
@@ -83,7 +83,7 @@ const BarChart = ({ graphData, graphType, keys }) => {
 						tickSize: 5,
 						tickPadding: 5,
 						tickRotation: 0,
-						legend: 'country',
+						legend: '',
 						legendPosition: 'middle',
 						legendOffset: -40
 					}}
