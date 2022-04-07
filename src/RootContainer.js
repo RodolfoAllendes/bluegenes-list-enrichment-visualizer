@@ -88,8 +88,8 @@ const RootContainer = ({ service, entity }) => {
 			pathways.map(p => {
 				let item = {
 					'id': p.identifier,
-					'matches': p.matches/listAnnotationSize,
-					'background': p.populationAnnotationCount/genomeAnnotationSize,
+					'matches': (p.matches/listAnnotationSize).toFixed(2),
+					'background': (p.populationAnnotationCount/genomeAnnotationSize).toFixed(2),
 				};
 				geneSymbolList.forEach(g => {
 					item[g] = p.genes.has(g) ? 1 : 0;
