@@ -29,7 +29,7 @@ const PathwayTable = ({ pathways }) => {
 									<tr key={term.identifier}>
 										<td>{term.identifier}</td>
 										<td>{term.description}</td>
-										<td>{term['p-value']}</td>
+										<td>{(term['p-value']).toExponential(4)}</td>
 										<td>{term.matches}</td>
 										<td>{term.populationAnnotationCount}</td>
 									</tr>
